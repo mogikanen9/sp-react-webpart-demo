@@ -1,0 +1,18 @@
+{
+  "$schema": "https://dev.office.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "hello-book-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/helloBook/HelloBookWebPart.js",
+          "manifest": "./src/webparts/helloBook/HelloBookWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "HelloBookWebPartStrings": "lib/webparts/helloBook/loc/{locale}.js"
+  }
+}
