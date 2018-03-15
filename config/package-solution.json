@@ -1,0 +1,12 @@
+{
+  "$schema": "https://dev.office.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "sp-react-webpart-demo-client-side-solution",
+    "id": "15bd6823-76ea-466e-a428-73fb14aa9716",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true
+  },
+  "paths": {
+    "zippedPackage": "solution/sp-react-webpart-demo.sppkg"
+  }
+}
