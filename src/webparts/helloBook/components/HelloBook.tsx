@@ -19,12 +19,12 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
   constructor(props: IHelloBookProps, state: IHelloBookState) {
     super();
     this.bookService = new BookServiceSTubImpl();
+    this.state = {books: emptyBooks};
   }
 
   public componentDidMount() {
     this.bookService.getAll().then((result: Book[]) => {
       this.setState({ books: result });
-      console.log('result->', result);
     });
   }
 
@@ -38,7 +38,7 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
               <p className={styles.subTitle}>Customize SharePoint experiences using Web Parts.</p>
               <p className={styles.description}>{escape(this.props.description)}</p>
 
-              <ViewList books={emptyBooks} />
+              <ViewList books={this.state.books} />
 
             </div>
           </div>

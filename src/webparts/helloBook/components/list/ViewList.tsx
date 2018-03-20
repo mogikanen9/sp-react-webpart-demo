@@ -9,11 +9,18 @@ export class ViewList extends React.Component<IViewListProps, {}>{
     }
 
     public render(): React.ReactElement<IViewListProps> {
+        
+        let listOfBooks = this.props.books.map((book:Book)=>{
+           return <li>{book.isbn} - {book.name} - {book.description}</li>
+        });
+
         return (
             <div>
                 <h3>Book List</h3>
                 <div>
-                    {this.props.books}
+                    <ul>
+                        {listOfBooks}
+                    </ul>
                 </div>
             </div>);
     }
