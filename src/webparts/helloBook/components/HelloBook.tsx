@@ -10,18 +10,21 @@ import { BookServiceSTubImpl } from '../service/BookServiceStubImpl';
 import { Book } from '../service/vo/Book';
 import { IHelloBookState } from './IHelloBookState';
 
+const emptyBooks: Book[] = new Array<Book>();
+
 export default class HelloBook extends React.Component<IHelloBookProps, IHelloBookState> {
 
   private bookService: BookService;
 
-  constructor(props:IHelloBookProps, state: IHelloBookState ) {
+  constructor(props: IHelloBookProps, state: IHelloBookState) {
     super();
     this.bookService = new BookServiceSTubImpl();
   }
 
-  protected componentDidMount() {
+  public componentDidMount() {
     this.bookService.getAll().then((result: Book[]) => {
-      this.setState({ "books": result });
+      this.setState({ books: result });
+      console.log('result->', result);
     });
   }
 
@@ -31,13 +34,12 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
         <div className={styles.container}>
           <div className={styles.row}>
             <div className={styles.column}>
-              <span className={styles.title}>Welcome to SharePoint!</span>
+              <span className={styles.title}>Welcome to SharePoint Book Sample Web Part!</span>
               <p className={styles.subTitle}>Customize SharePoint experiences using Web Parts.</p>
               <p className={styles.description}>{escape(this.props.description)}</p>
-              <a href="https://aka.ms/spfx" className={styles.button}>
-                <span className={styles.label}>Learn more</span>
-                <ViewList books={this.state.books} />
-              </a>
+
+              <ViewList books={emptyBooks} />
+
             </div>
           </div>
         </div>
