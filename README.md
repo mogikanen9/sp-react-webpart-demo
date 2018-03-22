@@ -1,5 +1,8 @@
 ## sp-react-webpart-demo
 
+[![Build Status](https://travis-ci.org/mogikanen9/sp-react-webpart-demo.svg?branch=integrate-with-travis-ci)](https://travis-ci.org/mogikanen9/sp-react-webpart-demo)
+
+
 This is where you include your WebPart documentation.
 
 ### Building the code
