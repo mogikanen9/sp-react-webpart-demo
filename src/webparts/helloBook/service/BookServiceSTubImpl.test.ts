@@ -15,7 +15,7 @@ describe('BookServiceSTubImpl', () => {
             return sut.getAll().then((books) => {
                 assert.isNotNull(books);
                 assert.isArray(books);
-                assert.isAtLeast(1, books.length);
+                assert.isAtLeast(10, books.length);
             });
         });
     });
