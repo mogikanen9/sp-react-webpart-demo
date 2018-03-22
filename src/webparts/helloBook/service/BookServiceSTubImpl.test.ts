@@ -1,5 +1,8 @@
 import * as mocha from 'mocha';
+
 import { assert } from 'chai';
+import { expect } from 'chai';
+
 import { BookServiceSTubImpl } from './BookServiceStubImpl';
 
 describe('BookServiceSTubImpl', () => {
