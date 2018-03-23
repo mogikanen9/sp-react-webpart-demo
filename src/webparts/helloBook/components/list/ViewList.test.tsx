@@ -1,5 +1,5 @@
 import * as mocha from 'mocha';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 import { shallow } from 'enzyme';
 
 import * as React from 'react';
@@ -15,7 +15,7 @@ describe('ViewList tests', () => {
     });
 
     it('basic rendering', () => {
-        console.log('out->', sut.html());
-        //const wrapper = sut.find();
+        //console.log('out->', sut.html());
+        expect(sut.contains(<h3>Book List</h3>)).to.equal(true);
     });
 });
