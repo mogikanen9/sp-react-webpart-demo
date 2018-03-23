@@ -28,6 +28,10 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
     });
   }
 
+  public viewList(){
+    return (<ViewList books={this.state.books} />);
+  }
+
   public render(): React.ReactElement<IHelloBookProps> {
     return (
       <div className={styles.helloBook}>
@@ -37,7 +41,7 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
               <span className={styles.title}>Welcome to SharePoint Book Sample Web Part!</span>
               <p className={styles.subTitle}>Customize SharePoint experiences using Web Parts.</p>
               <p className={styles.description}>{escape(this.props.description)}</p>
-              <ViewList books={this.state.books} />
+                {this.viewList()}
             </div>
           </div>
         </div>
