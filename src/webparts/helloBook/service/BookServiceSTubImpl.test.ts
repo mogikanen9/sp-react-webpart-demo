@@ -1,9 +1,14 @@
+/// <reference types="mocha" />
+/// <reference types="sinon" />
+
 import * as mocha from 'mocha';
 
 import { assert } from 'chai';
 import { expect } from 'chai';
 
 import { BookServiceSTubImpl } from './BookServiceStubImpl';
+
+declare const sinon: sinon.SinonStatic;
 
 describe('BookServiceSTubImpl', () => {
 
@@ -19,6 +24,15 @@ describe('BookServiceSTubImpl', () => {
                 assert.isNotNull(books);
                 assert.isArray(books);
                 assert.isAtLeast(10, books.length);
+            });
+        });
+
+        it('verify that getMyBooks is called ones', () => {
+          
+            let spyMyBooks = sinon.spy(sut, "getMyBooks");
+
+            return sut.getAll().then((books) => {
+                assert(spyMyBooks.calledOnce);
             });
         });
     });
