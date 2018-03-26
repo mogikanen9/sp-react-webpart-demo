@@ -58,17 +58,6 @@ export class ViewList extends React.Component<IViewListProps, {}>{
 
     public render(): React.ReactElement<IViewListProps> {
 
-        /*let items: {}[] = new Array<{}>();
-
-        this.props.books.map((book: Book) => {
-            items.push({
-                key: book.isbn,
-                isbn: book.isbn,
-                name: book.name,
-                desc: book.description
-            });
-        });*/
-
         return (
             <div>
                 <h3>Book List</h3>
