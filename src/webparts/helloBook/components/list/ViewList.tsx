@@ -37,13 +37,14 @@ export class ViewList extends React.Component<IViewListProps, {}>{
 
     constructor(props) {
         super();
+
+        this.fillRows = this.fillRows.bind(this);
     }
 
-    public render(): React.ReactElement<IViewListProps> {
-
+    public fillRows(books: Array<Book>): Array<{}> {
         let items: {}[] = new Array<{}>();
 
-        this.props.books.map((book: Book) => {
+        books.map((book: Book) => {
             items.push({
                 key: book.isbn,
                 isbn: book.isbn,
@@ -52,12 +53,17 @@ export class ViewList extends React.Component<IViewListProps, {}>{
             });
         });
 
+        return items; 
+    }
+
+    public render(): React.ReactElement<IViewListProps> {
+
         return (
             <div>
                 <h3>Book List</h3>
                 <div>
                     <DetailsList
-                        items={items}
+                        items={this.fillRows(this.props.books)}
                         columns={BOOK_COLUMNS}
                         setKey='set'
                     //layoutMode={DetailsListLayoutMode.fixedColumns}

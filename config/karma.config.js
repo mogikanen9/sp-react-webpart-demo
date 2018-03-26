@@ -6,7 +6,6 @@ const path = require('path');
 
 module.exports = function (config) {
     existingKarmaConfig(config);
-
     config.set({
         reporters: ['test-result', 'mocha-clean',
             'coverage'],
