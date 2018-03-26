@@ -1,3 +1,5 @@
+/// <reference types="sinon" />
+
 import * as mocha from 'mocha';
 import { assert, expect } from 'chai';
 import { shallow } from 'enzyme';
@@ -7,6 +9,7 @@ import * as React from 'react';
 import { ViewList } from './ViewList';
 import { IViewListProps } from './IViewListProps';
 
+declare const sinon: sinon.SinonStatic;
 
 describe('ViewList tests', () => {
 
@@ -20,6 +23,21 @@ describe('ViewList tests', () => {
 
         it('BookList header is displayed', () => {
             expect(sut.contains(<h3>Book List</h3>)).to.equal(true);
+        });
+
+        it('check that fillRows is called once for rendering', () => {
+
+            //setup spy
+            let viewListInstance = sut.instance();    
+            sinon.spy(viewListInstance,"fillRows");
+            
+            //force update to trigger render
+            viewListInstance.forceUpdate();
+
+            expect(viewListInstance.fillRows.calledOnce).to.be.equal(true);
+            
+            //unwrap the spy
+            viewListInstance.fillRows.restore();
         });
     });
 
