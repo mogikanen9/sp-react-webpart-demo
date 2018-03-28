@@ -8,8 +8,9 @@ import {
 } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'HelloBookWebPartStrings';
-import HelloBook from './components/HelloBook';
-import { IHelloBookProps } from './components/IHelloBookProps';
+//import HelloBook from './components/HelloBook';
+//import { IHelloBookProps } from './components/IHelloBookProps';
+import AppRoute from './AppRoute';
 
 export interface IHelloBookWebPartProps {
   description: string;
@@ -18,11 +19,14 @@ export interface IHelloBookWebPartProps {
 export default class HelloBookWebPart extends BaseClientSideWebPart<IHelloBookWebPartProps> {
 
   public render(): void {
-    const element: React.ReactElement<IHelloBookProps > = React.createElement(
+    /*const element: React.ReactElement<IHelloBookProps> = React.createElement(
       HelloBook,
       {
         description: this.properties.description
       }
+    );*/
+    const element = React.createElement(
+      AppRoute
     );
 
     ReactDom.render(element, this.domElement);
