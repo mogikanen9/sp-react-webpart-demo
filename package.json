@@ -20,7 +20,8 @@
     "@types/webpack-env": ">=1.12.1 <1.14.0",
     "office-ui-fabric-react": "^5.66.0",
     "react": "15.6.2",
-    "react-dom": "15.6.2"
+    "react-dom": "15.6.2",
+    "react-router-dom": "^4.2.2"
   },
   "devDependencies": {
     "@microsoft/sp-build-web": "~1.4.1",

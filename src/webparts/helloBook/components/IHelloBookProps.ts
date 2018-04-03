@@ -1,3 +1,3 @@
-export interface IHelloBookProps {
+export default interface IHelloBookProps {
   description: string;
 }
