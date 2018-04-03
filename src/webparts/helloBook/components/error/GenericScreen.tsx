@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { IErrorScreenProps } from './IErrorScreenProps';
+import IGenericScreenProps from './IGenericScreenProps';
 
-class ErrorScreen extends React.Component<IErrorScreenProps> {
+class ErrorScreen extends React.Component<IGenericScreenProps> {
 
-    constructor(props: IErrorScreenProps) {
+    constructor(props: IGenericScreenProps) {
         super(props);
     }
 
