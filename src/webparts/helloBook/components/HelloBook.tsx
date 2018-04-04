@@ -8,6 +8,7 @@ import { IViewListProps } from './list/IViewListProps';
 
 import Toolbar from './controls/Toolbar';
 import IToolbarProps from './controls/IToolbarProps';
+import ToolbarItem from './controls/ToolbarItem';
 
 import { BookService } from '../service/BookService';
 import { BookServiceSTubImpl } from '../service/BookServiceStubImpl';
@@ -37,10 +38,10 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
   }
 
   public showToolbar() {
-    let theLinks: Array<[string, string]> = new Array();
-    theLinks.push(['/add', 'Add']);
-    theLinks.push(['/edit', 'Edit']);
-    theLinks.push(['/delete', 'Delete']);
+    let theLinks: Array<ToolbarItem> = new Array();
+    theLinks.push({ path: '/add', displayName: 'Add', iconName: 'Add' });
+    theLinks.push({ path: '/edit', displayName: 'Edit', iconName: 'Edit' });
+    theLinks.push({ path: '/delete', displayName: 'Delete', iconName: 'Delete' });
 
     let props: IToolbarProps = { links: theLinks };
     return (<Toolbar {...props} />);
