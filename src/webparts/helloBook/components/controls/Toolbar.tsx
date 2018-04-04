@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import IToolbarProps from './IToolbarProps';
 import ToolbarItem from './ToolbarItem';
 
@@ -13,20 +12,16 @@ export default class Toolbar extends React.Component<IToolbarProps> {
         super();
     }
 
-    public buildToolBarLinks() {
-        return this.props.links.map((tuple) =>
-            <Link to={tuple.path}>{tuple.displayName}</Link>
-        );
-    }
 
     public buildItems(): IContextualMenuItem[] {
         let items: IContextualMenuItem[] = new Array<IContextualMenuItem>();
         this.props.links.map((tuple) => {
-            let item: IContextualMenuItem = { 
+            let item: IContextualMenuItem = {
                 key: tuple.displayName,
                 name: tuple.displayName,
-                href: '#'+tuple.path,
-                icon: tuple.iconName };
+                href: '#' + tuple.path,
+                icon: tuple.iconName
+            };
             items.push(item);
         });
         return items;
@@ -36,7 +31,6 @@ export default class Toolbar extends React.Component<IToolbarProps> {
 
         return (
             <div>
-                {this.buildToolBarLinks()}
                 <CommandBar items={this.buildItems()} />
             </div>);
     }
