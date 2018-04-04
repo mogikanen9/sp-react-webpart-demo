@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IViewListProps } from './IViewListProps';
 import { Book } from '../../service/vo/Book';
-import { DetailsList, IColumn } from 'office-ui-fabric-react/lib/DetailsList';
+import { DetailsList, IColumn, SelectionMode } from 'office-ui-fabric-react/lib/DetailsList';
 
 const BOOK_COLUMNS: IColumn[] = [
     {
@@ -39,6 +39,7 @@ export class ViewList extends React.Component<IViewListProps, {}>{
         super();
 
         this.fillRows = this.fillRows.bind(this);
+        this._onActiveItemChanged = this._onActiveItemChanged.bind(this);
     }
 
     public fillRows(books: Array<Book>): Array<{}> {
@@ -53,27 +54,30 @@ export class ViewList extends React.Component<IViewListProps, {}>{
             });
         });
 
-        return items; 
+        return items;
     }
 
+    private _onActiveItemChanged(item?: any, index?: number, ev?: React.FocusEvent<HTMLElement>) {
+        this.props.onItemSelected(item.key);
+    }
     public render(): React.ReactElement<IViewListProps> {
 
         return (
             <div>
-                <h3>Book List</h3>
-                <div>
-                    <DetailsList
-                        items={this.fillRows(this.props.books)}
-                        columns={BOOK_COLUMNS}
-                        setKey='set'
+                <DetailsList
+                    items={this.fillRows(this.props.books)}
+                    columns={BOOK_COLUMNS}
+                    setKey='set'
                     //layoutMode={DetailsListLayoutMode.fixedColumns}
                     //selection={this._selection}
                     //selectionPreservedOnEmptyClick={true}
                     //ariaLabelForSelectionColumn='Toggle selection'
                     //ariaLabelForSelectAllCheckbox='Toggle selection for all items'
-                    //onItemInvoked={this._onItemInvoked}
-                    />
-                </div>
+                    selectionPreservedOnEmptyClick={true}
+                    onActiveItemChanged={this._onActiveItemChanged}
+                    compact={true}
+                    selectionMode={SelectionMode.single}
+                />
             </div>);
     }
 }

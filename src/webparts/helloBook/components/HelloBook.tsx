@@ -15,7 +15,8 @@ import { BookServiceSTubImpl } from '../service/BookServiceStubImpl';
 import { Book } from '../service/vo/Book';
 import { IHelloBookState } from './IHelloBookState';
 
-const emptyBooks: Book[] = new Array<Book>();
+const EMPTY_BOOKS: Book[] = new Array<Book>();
+export const NOT_SELECTED_BOOK_ID: string = 'NA';
 
 export default class HelloBook extends React.Component<IHelloBookProps, IHelloBookState> {
 
@@ -24,7 +25,9 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
   constructor(props: IHelloBookProps, state: IHelloBookState) {
     super();
     this.bookService = new BookServiceSTubImpl();
-    this.state = { books: emptyBooks };
+    this.state = { books: EMPTY_BOOKS, selectedBookId: NOT_SELECTED_BOOK_ID };
+    this.showToolbar = this.showToolbar.bind(this);
+    this.handleBookItemSelect = this.handleBookItemSelect.bind(this);
   }
 
   public componentDidMount() {
@@ -33,15 +36,21 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
     });
   }
 
+  public handleBookItemSelect(itemId: string) {
+    console.log('selected item id ->', itemId);
+    this.setState({ selectedBookId: itemId });
+  }
+
   public showList() {
-    return (<ViewList books={this.state.books} />);
+    return (<ViewList books={this.state.books} onItemSelected={this.handleBookItemSelect} />);
   }
 
   public showToolbar() {
     let theLinks: Array<ToolbarItem> = new Array();
+    const itemIsSelected = this.state.selectedBookId !== NOT_SELECTED_BOOK_ID;
     theLinks.push({ path: '/add', displayName: 'Add', iconName: 'Add' });
-    theLinks.push({ path: '/edit', displayName: 'Edit', iconName: 'Edit', disabled: true });
-    theLinks.push({ path: '/delete', displayName: 'Delete', iconName: 'Delete', disabled: true });
+    theLinks.push({ path: '/edit', displayName: 'Edit', iconName: 'Edit', disabled: !itemIsSelected });
+    theLinks.push({ path: '/delete', displayName: 'Delete', iconName: 'Delete', disabled: !itemIsSelected });
 
     let props: IToolbarProps = { links: theLinks };
     return (<Toolbar {...props} />);
