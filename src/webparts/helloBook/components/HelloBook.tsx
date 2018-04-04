@@ -40,8 +40,8 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
   public showToolbar() {
     let theLinks: Array<ToolbarItem> = new Array();
     theLinks.push({ path: '/add', displayName: 'Add', iconName: 'Add' });
-    theLinks.push({ path: '/edit', displayName: 'Edit', iconName: 'Edit' });
-    theLinks.push({ path: '/delete', displayName: 'Delete', iconName: 'Delete' });
+    theLinks.push({ path: '/edit', displayName: 'Edit', iconName: 'Edit', disabled: true });
+    theLinks.push({ path: '/delete', displayName: 'Delete', iconName: 'Delete', disabled: true });
 
     let props: IToolbarProps = { links: theLinks };
     return (<Toolbar {...props} />);

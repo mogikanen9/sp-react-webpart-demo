@@ -20,7 +20,8 @@ export default class Toolbar extends React.Component<IToolbarProps> {
                 key: tuple.displayName,
                 name: tuple.displayName,
                 href: '#' + tuple.path,
-                icon: tuple.iconName
+                icon: tuple.iconName,
+                disabled: tuple.disabled
             };
             items.push(item);
         });
