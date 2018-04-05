@@ -10,8 +10,6 @@ import Toolbar from './controls/Toolbar';
 import IToolbarProps from './controls/IToolbarProps';
 import ToolbarItem from './controls/ToolbarItem';
 
-import { BookService } from '../service/BookService';
-import { BookServiceSTubImpl } from '../service/BookServiceStubImpl';
 import { Book } from '../service/vo/Book';
 import { IHelloBookState } from './IHelloBookState';
 import { NOT_SELECTED_BOOK_ID } from './util/Constants';
@@ -20,18 +18,16 @@ const EMPTY_BOOKS: Book[] = new Array<Book>();
 
 export default class HelloBook extends React.Component<IHelloBookProps, IHelloBookState> {
 
-  private bookService: BookService;
-
   constructor(props: IHelloBookProps, state: IHelloBookState) {
     super();
-    this.bookService = new BookServiceSTubImpl();
+
     this.state = { books: EMPTY_BOOKS, selectedBookId: NOT_SELECTED_BOOK_ID };
     this.showToolbar = this.showToolbar.bind(this);
     this.handleBookItemSelect = this.handleBookItemSelect.bind(this);
   }
 
   public componentDidMount() {
-    this.bookService.getAll().then((result: Book[]) => {
+    this.props.bookService.getAll().then((result: Book[]) => {
       this.setState({ books: result });
     });
   }
