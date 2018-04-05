@@ -14,9 +14,9 @@ import { BookService } from '../service/BookService';
 import { BookServiceSTubImpl } from '../service/BookServiceStubImpl';
 import { Book } from '../service/vo/Book';
 import { IHelloBookState } from './IHelloBookState';
+import { NOT_SELECTED_BOOK_ID } from './util/Constants';
 
 const EMPTY_BOOKS: Book[] = new Array<Book>();
-export const NOT_SELECTED_BOOK_ID: string = 'NA';
 
 export default class HelloBook extends React.Component<IHelloBookProps, IHelloBookState> {
 
@@ -47,10 +47,10 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
 
   public showToolbar() {
     let theLinks: Array<ToolbarItem> = new Array();
-    const itemIsSelected = this.state.selectedBookId !== NOT_SELECTED_BOOK_ID;
+    const disableFlag = !(this.state.selectedBookId !== NOT_SELECTED_BOOK_ID);
     theLinks.push({ path: '/add', displayName: 'Add', iconName: 'Add' });
-    theLinks.push({ path: '/edit', displayName: 'Edit', iconName: 'Edit', disabled: !itemIsSelected });
-    theLinks.push({ path: '/delete', displayName: 'Delete', iconName: 'Delete', disabled: !itemIsSelected });
+    theLinks.push({ path: '/edit', displayName: 'Edit', iconName: 'Edit', disabled: disableFlag });
+    theLinks.push({ path: '/delete', displayName: 'Delete', iconName: 'Delete', disabled: disableFlag });
 
     let props: IToolbarProps = { links: theLinks };
     return (<Toolbar {...props} />);

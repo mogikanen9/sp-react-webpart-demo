@@ -1,0 +1,1 @@
+export const NOT_SELECTED_BOOK_ID: string = 'NA';

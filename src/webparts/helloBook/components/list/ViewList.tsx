@@ -2,6 +2,8 @@ import * as React from 'react';
 import { IViewListProps } from './IViewListProps';
 import { Book } from '../../service/vo/Book';
 import { DetailsList, IColumn, SelectionMode } from 'office-ui-fabric-react/lib/DetailsList';
+import { Selection } from 'office-ui-fabric-react/lib/DetailsList';
+import { NOT_SELECTED_BOOK_ID } from '../util/Constants';
 
 const BOOK_COLUMNS: IColumn[] = [
     {
@@ -35,11 +37,24 @@ const BOOK_COLUMNS: IColumn[] = [
 
 export class ViewList extends React.Component<IViewListProps, {}>{
 
+    protected mySelection: Selection;
+
     constructor(props) {
         super();
 
         this.fillRows = this.fillRows.bind(this);
-        this._onActiveItemChanged = this._onActiveItemChanged.bind(this);
+
+        this.mySelection = new Selection({
+            onSelectionChanged: () => {
+                let itemId: string = NOT_SELECTED_BOOK_ID;
+                if (this.mySelection.getSelectedCount() > 0) {
+                    itemId = this.mySelection.getSelection()[0].key.toString();
+                }
+
+                console.log('itemId->', itemId);
+                this.props.onItemSelected(itemId);
+            }
+        });
     }
 
     public fillRows(books: Array<Book>): Array<{}> {
@@ -57,9 +72,6 @@ export class ViewList extends React.Component<IViewListProps, {}>{
         return items;
     }
 
-    private _onActiveItemChanged(item?: any, index?: number, ev?: React.FocusEvent<HTMLElement>) {
-        this.props.onItemSelected(item.key);
-    }
     public render(): React.ReactElement<IViewListProps> {
 
         return (
@@ -68,15 +80,10 @@ export class ViewList extends React.Component<IViewListProps, {}>{
                     items={this.fillRows(this.props.books)}
                     columns={BOOK_COLUMNS}
                     setKey='set'
-                    //layoutMode={DetailsListLayoutMode.fixedColumns}
-                    //selection={this._selection}
-                    //selectionPreservedOnEmptyClick={true}
-                    //ariaLabelForSelectionColumn='Toggle selection'
-                    //ariaLabelForSelectAllCheckbox='Toggle selection for all items'
                     selectionPreservedOnEmptyClick={true}
-                    onActiveItemChanged={this._onActiveItemChanged}
                     compact={true}
                     selectionMode={SelectionMode.single}
+                    selection={this.mySelection}
                 />
             </div>);
     }
