@@ -12,9 +12,8 @@ import ToolbarItem from './controls/ToolbarItem';
 
 import { Book } from '../service/vo/Book';
 import { IHelloBookState } from './IHelloBookState';
-import { NOT_SELECTED_BOOK_ID } from './util/Constants';
+import { NOT_SELECTED_BOOK_ID, EMPTY_BOOKS } from './util/Constants';
 
-const EMPTY_BOOKS: Book[] = new Array<Book>();
 
 export default class HelloBook extends React.Component<IHelloBookProps, IHelloBookState> {
 
@@ -28,22 +27,22 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
 
   public componentDidMount() {
     this.props.bookService.getAll().then((result: Book[]) => {
-      this.setState({ books: result });
+      this.props.refreshBooks(result);      
     });
   }
 
   public handleBookItemSelect(itemId: string) {
     console.log('selected item id ->', itemId);
-    this.setState({ selectedBookId: itemId });
+    this.props.refreshSelectedBook(itemId);
   }
 
   public showList() {
-    return (<ViewList books={this.state.books} onItemSelected={this.handleBookItemSelect} />);
+    return (<ViewList books={this.props.books} onItemSelected={this.handleBookItemSelect} />);
   }
 
   public showToolbar() {
     let theLinks: Array<ToolbarItem> = new Array();
-    const disableFlag = !(this.state.selectedBookId !== NOT_SELECTED_BOOK_ID);
+    const disableFlag = !(this.props.selectedBookId !== NOT_SELECTED_BOOK_ID);
     theLinks.push({ path: '/add', displayName: 'Add', iconName: 'Add' });
     theLinks.push({ path: '/edit', displayName: 'Edit', iconName: 'Edit', disabled: disableFlag });
     theLinks.push({ path: '/delete', displayName: 'Delete', iconName: 'Delete', disabled: disableFlag });
