@@ -31,7 +31,8 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.helloBook = this.helloBook.bind(this);
         this.showAddBook = this.showAddBook.bind(this);
         this.showEditBook = this.showEditBook.bind(this);
-
+        this.loadBooks = this.loadBooks.bind(this);
+        this.updateSelectedBookId = this.updateSelectedBookId.bind(this);
         this.state = { books: EMPTY_BOOKS, selectedBookId: NOT_SELECTED_BOOK_ID };
     }
 
