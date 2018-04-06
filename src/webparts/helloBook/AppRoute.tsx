@@ -11,31 +11,75 @@ import IGenericScreenProps from './components/error/IGenericScreenProps';
 
 import BookCRUD from './components/forms/BookCRUD';
 
+import { BookService } from './service/BookService';
+import { BookServiceSTubImpl } from './service/BookServiceStubImpl';
+import { Book } from './service/vo/Book';
+
+import { IBookCRUDProps } from './components/forms/IBookCRUDProps';
+import { NOT_SELECTED_BOOK_ID, EMPTY_BOOKS } from './components/util/Constants';
+import { IAppRouteState } from './IAppRouteState';
+
 const newHistory = createBrowserHistory();
 
-class AppRoute extends React.Component {
+class AppRoute extends React.Component<any, IAppRouteState> {
+
+    private bookService: BookService;
+
+    constructor(props: any, state: IAppRouteState) {
+        super();
+        this.bookService = new BookServiceSTubImpl();
+        this.helloBook = this.helloBook.bind(this);
+        this.showAddBook = this.showAddBook.bind(this);
+        this.showEditBook = this.showEditBook.bind(this);
+        this.loadBooks = this.loadBooks.bind(this);
+        this.updateSelectedBookId = this.updateSelectedBookId.bind(this);
+        this.state = { books: EMPTY_BOOKS, selectedBookId: NOT_SELECTED_BOOK_ID };
+    }
+
+    protected loadBooks(theBooks: Book[]) {
+        this.setState({ books: theBooks });
+    }
+
+    protected updateSelectedBookId(bookId: string) {
+        this.setState({ selectedBookId: bookId });
+    }
 
     protected helloBook() {
-        let props: IHelloBookProps = { description: 'Book Manager' };
+        const props: IHelloBookProps = {
+            description: 'Book Manager',
+            bookService: this.bookService,
+            books: this.state.books,
+            selectedBookId: this.state.selectedBookId,
+            refreshBooks: this.loadBooks,
+            refreshSelectedBook: this.updateSelectedBookId
+        };
         return <HelloBook {...props} />;
     }
 
     protected showErrorPage() {
-        let props: IGenericScreenProps = { message: '', code: '' };
+        const props: IGenericScreenProps = { message: '', code: '' };
         return <GenericScreen {...props} />;
     }
 
     protected showAddBook() {
-        return <BookCRUD />;
+        const props: IBookCRUDProps = {
+            bookService: this.bookService,
+            itemId: this.state.selectedBookId
+        };
+        return <BookCRUD {...props} />;
     }
 
     protected showEditBook() {
-        return <BookCRUD />;
+        const props: IBookCRUDProps = {
+            bookService: this.bookService,
+            itemId: this.state.selectedBookId
+        };
+        return <BookCRUD {...props} />;
     }
 
     public render() {
         return (
-            <HashRouter  history={newHistory}>
+            <HashRouter history={newHistory}>
                 <Switch>
                     <Route exact path="/" component={this.helloBook} />
                     <Route path="/home" component={this.helloBook} />

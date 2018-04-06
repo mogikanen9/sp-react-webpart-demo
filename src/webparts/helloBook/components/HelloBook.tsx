@@ -5,37 +5,50 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 import { ViewList } from './list/ViewList';
 import { IViewListProps } from './list/IViewListProps';
-import Toolbar from './controls/Toolbar';
 
-import { BookService } from '../service/BookService';
-import { BookServiceSTubImpl } from '../service/BookServiceStubImpl';
+import Toolbar from './controls/Toolbar';
+import IToolbarProps from './controls/IToolbarProps';
+import ToolbarItem from './controls/ToolbarItem';
+
 import { Book } from '../service/vo/Book';
 import { IHelloBookState } from './IHelloBookState';
+import { NOT_SELECTED_BOOK_ID, EMPTY_BOOKS } from './util/Constants';
 
-const emptyBooks: Book[] = new Array<Book>();
 
 export default class HelloBook extends React.Component<IHelloBookProps, IHelloBookState> {
 
-  private bookService: BookService;
-
   constructor(props: IHelloBookProps, state: IHelloBookState) {
     super();
-    this.bookService = new BookServiceSTubImpl();
-    this.state = { books: emptyBooks };
+
+    this.state = { books: EMPTY_BOOKS, selectedBookId: NOT_SELECTED_BOOK_ID };
+    this.showToolbar = this.showToolbar.bind(this);
+    this.handleBookItemSelect = this.handleBookItemSelect.bind(this);
   }
 
   public componentDidMount() {
-    this.bookService.getAll().then((result: Book[]) => {
-      this.setState({ books: result });
+    this.props.bookService.getAll().then((result: Book[]) => {
+      this.props.refreshBooks(result);      
     });
   }
 
+  public handleBookItemSelect(itemId: string) {
+    console.log('selected item id ->', itemId);
+    this.props.refreshSelectedBook(itemId);
+  }
+
   public showList() {
-    return (<ViewList books={this.state.books} />);
+    return (<ViewList books={this.props.books} onItemSelected={this.handleBookItemSelect} />);
   }
 
   public showToolbar() {
-    return (<Toolbar />);
+    let theLinks: Array<ToolbarItem> = new Array();
+    const disableFlag = !(this.props.selectedBookId !== NOT_SELECTED_BOOK_ID);
+    theLinks.push({ path: '/add', displayName: 'Add', iconName: 'Add' });
+    theLinks.push({ path: '/edit', displayName: 'Edit', iconName: 'Edit', disabled: disableFlag });
+    theLinks.push({ path: '/delete', displayName: 'Delete', iconName: 'Delete', disabled: disableFlag });
+
+    let props: IToolbarProps = { links: theLinks };
+    return (<Toolbar {...props} />);
   }
 
   public render(): React.ReactElement<IHelloBookProps> {
