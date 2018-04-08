@@ -53,14 +53,14 @@ describe('ViewList tests', () => {
                 expected: 0
             },
             {
-                input: [{ isbn: 'AAA', name: 'Name1', description: 'smth' }],
+                input: [{ isbn: 'AAA', name: 'Name1', description: 'smth', pubDate: new Date() }],
                 expected: 1
             },
             {
                 input:
                     [
-                        { isbn: 'AAA', name: 'Name1', description: 'smth' },
-                        { isbn: 'BBB', name: 'NameBBB', description: 'smthB' }],
+                        { isbn: 'AAA', name: 'Name1', description: 'smth', pubDate: new Date() },
+                        { isbn: 'BBB', name: 'NameBBB', description: 'smthB', pubDate: new Date() }],
                 expected: 2
             }
         ];
