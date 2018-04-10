@@ -10,6 +10,7 @@ import GenericScreen from './components/error/GenericScreen';
 import IGenericScreenProps from './components/error/IGenericScreenProps';
 
 import BookCRUD from './components/forms/BookCRUD';
+import { IBookCRUDProps, Mode as BookCRUDMode } from './components/forms/IBookCRUDProps';
 
 import { BookService } from './service/BookService';
 import { BookServiceSTubImpl } from './service/BookServiceStubImpl';
@@ -18,7 +19,6 @@ import { Book } from './service/vo/Book';
 import { IDateService } from '../helloBook/components/util/IDateService';
 import { DateServiceImpl } from '../helloBook/components/util/DateServiceImpl';
 
-import { IBookCRUDProps } from './components/forms/IBookCRUDProps';
 import { NOT_SELECTED_BOOK_ID, EMPTY_BOOKS } from './components/util/Constants';
 import { IAppRouteState } from './IAppRouteState';
 
@@ -39,7 +39,14 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.showEditBook = this.showEditBook.bind(this);
         this.loadBooks = this.loadBooks.bind(this);
         this.updateSelectedBookId = this.updateSelectedBookId.bind(this);
-        this.state = { books: EMPTY_BOOKS, selectedBookId: NOT_SELECTED_BOOK_ID };
+        this.handleAddBook = this.handleAddBook.bind(this);
+        this.handleUpdateBook = this.handleUpdateBook.bind(this);
+
+        this.state = {
+            books: EMPTY_BOOKS,
+            selectedBookId: NOT_SELECTED_BOOK_ID,
+            selectedBook: new Book()
+        };
     }
 
     protected loadBooks(theBooks: Book[]) {
@@ -47,7 +54,14 @@ class AppRoute extends React.Component<any, IAppRouteState> {
     }
 
     protected updateSelectedBookId(bookId: string) {
+
         this.setState({ selectedBookId: bookId });
+
+        if (bookId && bookId !== NOT_SELECTED_BOOK_ID) {
+            this.bookService.getById(bookId).then((book) => {
+                this.setState({ selectedBook: book });
+            });
+        }
     }
 
     protected helloBook() {
@@ -68,18 +82,27 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         return <GenericScreen {...props} />;
     }
 
+    protected handleAddBook(): void {
+        console.log('Creating new book->', this.state.selectedBook);
+    }
+
+    protected handleUpdateBook(): void {
+        console.log('Updating book->', this.state.selectedBook);
+    }
+
     protected showAddBook() {
         const props: IBookCRUDProps = {
-            bookService: this.bookService,
-            itemId: this.state.selectedBookId
+            mode: BookCRUDMode.NEW,
+            handleSubmit: this.handleAddBook
         };
         return <BookCRUD {...props} />;
     }
 
     protected showEditBook() {
         const props: IBookCRUDProps = {
-            bookService: this.bookService,
-            itemId: this.state.selectedBookId
+            mode: BookCRUDMode.EDIT,
+            book: this.state.selectedBook,
+            handleSubmit: this.handleUpdateBook
         };
         return <BookCRUD {...props} />;
     }

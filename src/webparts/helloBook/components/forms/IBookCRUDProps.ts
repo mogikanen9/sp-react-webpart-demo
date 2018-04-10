@@ -1,5 +1,14 @@
 import { BookService } from '../../service/BookService';
-export interface IBookCRUDProps {
-    bookService: BookService;
-    itemId: string;
+import { Book } from '../../service/vo/Book';
+
+interface IBookCRUDProps {
+    mode: Mode;
+    book?: Book;
+    handleSubmit(): void;
 }
+
+enum Mode {
+    NEW, EDIT, DELETE
+}
+
+export { IBookCRUDProps, Mode };
