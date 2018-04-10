@@ -15,6 +15,9 @@ import { BookService } from './service/BookService';
 import { BookServiceSTubImpl } from './service/BookServiceStubImpl';
 import { Book } from './service/vo/Book';
 
+import { IDateService } from '../helloBook/components/util/IDateService';
+import { DateServiceImpl } from '../helloBook/components/util/DateServiceImpl';
+
 import { IBookCRUDProps } from './components/forms/IBookCRUDProps';
 import { NOT_SELECTED_BOOK_ID, EMPTY_BOOKS } from './components/util/Constants';
 import { IAppRouteState } from './IAppRouteState';
@@ -24,10 +27,13 @@ const newHistory = createBrowserHistory();
 class AppRoute extends React.Component<any, IAppRouteState> {
 
     private bookService: BookService;
+    private dateService: IDateService;
 
     constructor(props: any, state: IAppRouteState) {
         super();
         this.bookService = new BookServiceSTubImpl();
+        this.dateService = new DateServiceImpl();
+
         this.helloBook = this.helloBook.bind(this);
         this.showAddBook = this.showAddBook.bind(this);
         this.showEditBook = this.showEditBook.bind(this);
@@ -51,7 +57,8 @@ class AppRoute extends React.Component<any, IAppRouteState> {
             books: this.state.books,
             selectedBookId: this.state.selectedBookId,
             refreshBooks: this.loadBooks,
-            refreshSelectedBook: this.updateSelectedBookId
+            refreshSelectedBook: this.updateSelectedBookId,
+            dateService: this.dateService
         };
         return <HelloBook {...props} />;
     }

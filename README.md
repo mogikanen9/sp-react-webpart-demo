@@ -18,6 +18,8 @@ Demo application which has basic record management functionality: view and manag
  - Build tools  
    - [NPM](https://www.npmjs.com/)
    - [Gulp](https://gulpjs.com/)
+ - Other
+   - [Moment.js](http://momentjs.com)   
 
 ### Building the code
 

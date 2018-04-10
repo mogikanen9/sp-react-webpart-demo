@@ -28,12 +28,16 @@ const INIT_BOOK_DATA = [
         name: "Patterns of Enterprise Application Architecture", isbn: "0321127420",
         description: "Enterprise patterns", pubDate: new Date('2003-10-29')
     },
-    { name: "Domain-Specific Languages", isbn: "0321712943", description: "DSL",pubDate: new Date('2009-09-08') },
-    { name: "Angular 2 Development with TypeScript", isbn: "1617293121", 
-    description: "Angular2 development", pubDate: new Date('20015-09-30') },
-    { name: "Spring Microservices", isbn: "1786466686", 
+    { name: "Domain-Specific Languages", isbn: "0321712943", description: "DSL", pubDate: new Date('2009-09-08') },
+    {
+        name: "Angular 2 Development with TypeScript", isbn: "1617293121",
+        description: "Angular2 development", pubDate: new Date('20015-09-30')
+    },
+    {
+        name: "Spring Microservices", isbn: "1786466686",
         description: "Microservices with Spring",
-        pubDate: new Date('2015-05-14') }];
+        pubDate: new Date('2015-05-14')
+    }];
 
 export class BookServiceSTubImpl implements BookService {
 

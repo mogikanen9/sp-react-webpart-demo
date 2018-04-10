@@ -4,7 +4,6 @@ import { Book } from '../../service/vo/Book';
 import { DetailsList, IColumn, SelectionMode } from 'office-ui-fabric-react/lib/DetailsList';
 import { Selection } from 'office-ui-fabric-react/lib/DetailsList';
 import { NOT_SELECTED_BOOK_ID } from '../util/Constants';
-import * as moment from 'moment';
 
 const BOOK_COLUMNS: IColumn[] = [
     {
@@ -49,7 +48,7 @@ export class ViewList extends React.Component<IViewListProps, {}>{
 
     protected mySelection: Selection;
 
-    constructor(props) {
+    constructor(props: IViewListProps) {
         super();
 
         this.fillRows = this.fillRows.bind(this);
@@ -67,14 +66,6 @@ export class ViewList extends React.Component<IViewListProps, {}>{
         });
     }
 
-    protected printDate(date: Date): string {
-        let result: string = 'N/A';
-        if (date) {
-            result = moment(date).format('YYYY-MM-DD');
-        }
-        return result;
-    }
-
     public fillRows(books: Array<Book>): Array<{}> {
         let items: {}[] = new Array<{}>();
 
@@ -82,7 +73,7 @@ export class ViewList extends React.Component<IViewListProps, {}>{
             items.push({
                 key: book.isbn,
                 isbn: book.isbn,
-                pubDate: this.printDate(book.pubDate),
+                pubDate: this.props.dateService.format(book.pubDate, 'N/A'),
                 //pubDate: this.printDate(new Date()),
                 name: book.name,
                 desc: book.description
