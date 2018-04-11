@@ -4,7 +4,8 @@ import { Book } from '../../service/vo/Book';
 import { Link } from 'react-router-dom';
 
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
-import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 
 class BookCRUD extends React.Component<IBookCRUDProps> {
 
@@ -37,6 +38,10 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
                     readOnly={readOnlyMode}
                     value={this.props.book.isbn}
                 />
+                <DatePicker
+                    label='Publication date'
+                    isRequired={true} 
+                    value={this.props.book.pubDate}/>
                 <TextField
                     label='Name'
                     placeholder='Book name'
@@ -55,6 +60,10 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
                 <PrimaryButton
                     type='submit'
                     onClick={this.handleSubmit}>Submit</PrimaryButton>
+                <DefaultButton
+                    href="home">
+                    Cancel
+                </DefaultButton>
             </div>
         </div>);
     }
