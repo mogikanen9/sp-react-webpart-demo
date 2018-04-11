@@ -4,4 +4,5 @@ export interface IAppRouteState{
     books: Book[];
     selectedBookId: string;
     selectedBook: Book;
+    selectedBookIndex: number;
 }

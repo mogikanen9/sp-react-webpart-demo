@@ -5,4 +5,6 @@ export interface IViewListProps {
     books: Book[];
     onItemSelected: (itemId: string) => void;
     dateService: IDateService;
+    selectedBookId?: string;
+    selectedBookIndex?: number;
 }

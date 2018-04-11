@@ -8,6 +8,7 @@ export default interface IHelloBookProps {
   dateService: IDateService;
   books: Book[];
   selectedBookId: string;
+  selectedBookIndex: number;
   refreshBooks: (books: Book[]) => void;
   refreshSelectedBook: (selectedBookId: string) => void;
 }

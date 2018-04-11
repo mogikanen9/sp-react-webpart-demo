@@ -62,8 +62,9 @@ export class ViewList extends React.Component<IViewListProps, {}>{
 
                 console.log('itemId->', itemId);
                 this.props.onItemSelected(itemId);
-            }
+            }          
         });
+
     }
 
     public fillRows(books: Array<Book>): Array<{}> {
@@ -84,9 +85,11 @@ export class ViewList extends React.Component<IViewListProps, {}>{
     }
 
     public render(): React.ReactElement<IViewListProps> {
-
         return (
             <div>
+                <p>
+                   Index-> {this.props.selectedBookIndex}
+                </p>
                 <DetailsList
                     items={this.fillRows(this.props.books)}
                     columns={BOOK_COLUMNS}

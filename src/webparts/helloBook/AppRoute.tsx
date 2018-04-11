@@ -19,7 +19,7 @@ import { Book } from './service/vo/Book';
 import { IDateService } from '../helloBook/components/util/IDateService';
 import { DateServiceImpl } from '../helloBook/components/util/DateServiceImpl';
 
-import { NOT_SELECTED_BOOK_ID, EMPTY_BOOKS } from './components/util/Constants';
+import { NOT_SELECTED_BOOK_ID, EMPTY_BOOKS, NOT_SELECTED_BOOK_INDEX } from './components/util/Constants';
 import { IAppRouteState } from './IAppRouteState';
 
 const newHistory = createBrowserHistory();
@@ -45,6 +45,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.state = {
             books: EMPTY_BOOKS,
             selectedBookId: NOT_SELECTED_BOOK_ID,
+            selectedBookIndex: NOT_SELECTED_BOOK_INDEX,
             selectedBook: new Book()
         };
     }
@@ -53,13 +54,27 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.setState({ books: theBooks });
     }
 
+
+    protected getSelectedItemIndex(books: Array<Book>, bookId: string): number {
+        let rs = -1;
+        if (bookId && bookId !== NOT_SELECTED_BOOK_ID) {
+            //rs = _.findIndex(books, (book) => { return book.isbn === bookId; });
+            for (let i = 0; i < books.length; i++) {
+                if (books[i].isbn === bookId) {
+                    rs = i;
+                    break;
+                }
+            }
+        }
+        return rs;
+    }
+
     protected updateSelectedBookId(bookId: string) {
-
-        this.setState({ selectedBookId: bookId });
-
+        this.setState({ selectedBookId: bookId, selectedBookIndex: NOT_SELECTED_BOOK_INDEX});
         if (bookId && bookId !== NOT_SELECTED_BOOK_ID) {
             this.bookService.getById(bookId).then((book) => {
-                this.setState({ selectedBook: book });
+                const newBookIndex:number = this.getSelectedItemIndex(this.state.books,bookId);
+                this.setState({ selectedBook: book, selectedBookIndex: newBookIndex});
             });
         }
     }
@@ -70,6 +85,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
             bookService: this.bookService,
             books: this.state.books,
             selectedBookId: this.state.selectedBookId,
+            selectedBookIndex: this.state.selectedBookIndex,
             refreshBooks: this.loadBooks,
             refreshSelectedBook: this.updateSelectedBookId,
             dateService: this.dateService
