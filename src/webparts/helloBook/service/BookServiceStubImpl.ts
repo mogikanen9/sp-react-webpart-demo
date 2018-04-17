@@ -80,7 +80,15 @@ export class BookServiceSTubImpl implements BookService {
         throw new Error("Method not implemented.");
     }
     public update(book: Book): Promise<string> {
-        throw new Error("Method not implemented.");
+        return new Promise((resolve, reject)=>{
+            if(book && book.isbn){
+                this.bookDataStore.set(book.isbn,book);
+                resolve(book.isbn);
+            }else{
+                reject('Book with ISBN were not provided.');
+            }
+            
+        });
     }
     public getAll(): Promise<Book[]> {
         return new Promise<Book[]>((resolve, reject) => {
