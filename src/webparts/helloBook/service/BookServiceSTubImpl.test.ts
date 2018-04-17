@@ -7,7 +7,7 @@ import { assert } from 'chai';
 import { expect } from 'chai';
 
 import { BookServiceSTubImpl } from './BookServiceStubImpl';
-import { Book } from '../../../../lib/webparts/helloBook/service/vo/Book';
+import { Book } from "./vo/Book";
 
 declare const sinon: sinon.SinonStatic;
 
