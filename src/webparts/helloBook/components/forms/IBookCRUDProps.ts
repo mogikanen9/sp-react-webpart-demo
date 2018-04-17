@@ -5,6 +5,7 @@ interface IBookCRUDProps {
     mode: Mode;
     book?: Book;
     handleSubmit(): void;
+    updateSelectedBook(book: Book): void;
 }
 
 enum Mode {

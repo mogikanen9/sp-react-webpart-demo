@@ -4,11 +4,10 @@ import { IDateService } from './util/IDateService';
 
 export default interface IHelloBookProps {
   description: string;
-  bookService: BookService;
   dateService: IDateService;
   books: Book[];
   selectedBookId: string;
   selectedBookIndex: number;
-  refreshBooks: (books: Book[]) => void;
+  refreshBooks: () => void;
   refreshSelectedBook: (selectedBookId: string) => void;
 }

@@ -12,10 +12,24 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
     constructor(props: IBookCRUDProps) {
         super();
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     public componentDidMount() {
 
+    }
+
+    protected handleInputChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        console.log('name->',name,';value->',value);
+        this.props.updateSelectedBook({
+            isbn: this.props.book.isbn,
+            name: value,
+            description: this.props.book.description,
+            pubDate: this.props.book.pubDate
+        });
     }
 
     protected handleSubmit(e) {
@@ -40,14 +54,15 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
                 />
                 <DatePicker
                     label='Publication date'
-                    isRequired={true} 
-                    value={this.props.book.pubDate}/>
+                    isRequired={true}
+                    value={this.props.book.pubDate} />
                 <TextField
                     label='Name'
                     placeholder='Book name'
                     required={true}
                     readOnly={readOnlyMode}
                     value={this.props.book.name}
+                    onChange={this.handleInputChange}
                 />
                 <TextField
                     label='Description'
