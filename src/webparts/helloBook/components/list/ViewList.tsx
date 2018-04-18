@@ -16,6 +16,15 @@ const BOOK_COLUMNS: IColumn[] = [
         ariaLabel: 'ISBN'
     },
     {
+        key: 'pubDate',
+        name: 'Published',
+        fieldName: 'pubDate',
+        minWidth: 100,
+        maxWidth: 250,
+        isResizable: false,
+        ariaLabel: 'PUblication Date'
+    },
+    {
         key: 'name',
         name: 'Name',
         fieldName: 'name',
@@ -39,7 +48,7 @@ export class ViewList extends React.Component<IViewListProps, {}>{
 
     protected mySelection: Selection;
 
-    constructor(props) {
+    constructor(props: IViewListProps) {
         super();
 
         this.fillRows = this.fillRows.bind(this);
@@ -55,6 +64,12 @@ export class ViewList extends React.Component<IViewListProps, {}>{
                 this.props.onItemSelected(itemId);
             }
         });
+
+    }
+
+    public componentDidMount() {
+        //select the checkbox/radio
+        this.mySelection.setIndexSelected(this.props.selectedBookIndex, true, false);
     }
 
     public fillRows(books: Array<Book>): Array<{}> {
@@ -64,6 +79,8 @@ export class ViewList extends React.Component<IViewListProps, {}>{
             items.push({
                 key: book.isbn,
                 isbn: book.isbn,
+                pubDate: this.props.dateService.format(book.pubDate, 'N/A'),
+                //pubDate: this.printDate(new Date()),
                 name: book.name,
                 desc: book.description
             });
@@ -73,7 +90,6 @@ export class ViewList extends React.Component<IViewListProps, {}>{
     }
 
     public render(): React.ReactElement<IViewListProps> {
-
         return (
             <div>
                 <DetailsList

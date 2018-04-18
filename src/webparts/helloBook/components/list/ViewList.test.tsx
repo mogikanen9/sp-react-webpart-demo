@@ -2,12 +2,14 @@
 
 import * as mocha from 'mocha';
 import { assert, expect } from 'chai';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 
 
 import * as React from 'react';
 import { ViewList } from './ViewList';
 import { IViewListProps } from './IViewListProps';
+
+import { IDateService } from '../util/IDateService';
 
 declare const sinon: sinon.SinonStatic;
 
@@ -15,7 +17,12 @@ describe('ViewList tests', () => {
 
     describe('basic rendering', () => {
         let sut;
-        const props: IViewListProps = { books: [], onItemSelected: sinon.mock() };
+        let mockedDateService: IDateService = { format: sinon.mock() };
+        const props: IViewListProps = {
+            books: [],
+            onItemSelected: sinon.mock(),
+            dateService: mockedDateService
+        };
 
         beforeEach(() => {
             sut = shallow(<ViewList {...props} />);
@@ -42,9 +49,20 @@ describe('ViewList tests', () => {
     });
 
     describe('#fillRows', () => {
-        let sut: ViewList;
+        let sut;// ViewList;
+        let mockedDateService: IDateService = {
+            format: (date: Date, emptySymbol: string) => {
+                return "-";
+            }
+        };
+        const props: IViewListProps = {
+            books: [],
+            onItemSelected: sinon.mock(),
+            dateService: mockedDateService
+        };
+
         beforeEach(() => {
-            sut = new ViewList({ books: [] });
+            sut = shallow(<ViewList {...props} />).instance();
         });
 
         const bookParamInput = [
@@ -53,14 +71,14 @@ describe('ViewList tests', () => {
                 expected: 0
             },
             {
-                input: [{ isbn: 'AAA', name: 'Name1', description: 'smth' }],
+                input: [{ isbn: 'AAA', name: 'Name1', description: 'smth', pubDate: new Date() }],
                 expected: 1
             },
             {
                 input:
                     [
-                        { isbn: 'AAA', name: 'Name1', description: 'smth' },
-                        { isbn: 'BBB', name: 'NameBBB', description: 'smthB' }],
+                        { isbn: 'AAA', name: 'Name1', description: 'smth', pubDate: new Date() },
+                        { isbn: 'BBB', name: 'NameBBB', description: 'smthB', pubDate: new Date() }],
                 expected: 2
             }
         ];

@@ -23,12 +23,11 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
     this.state = { books: EMPTY_BOOKS, selectedBookId: NOT_SELECTED_BOOK_ID };
     this.showToolbar = this.showToolbar.bind(this);
     this.handleBookItemSelect = this.handleBookItemSelect.bind(this);
+    this.showList = this.showList.bind(this);
   }
 
   public componentDidMount() {
-    this.props.bookService.getAll().then((result: Book[]) => {
-      this.props.refreshBooks(result);      
-    });
+    this.props.refreshBooks();
   }
 
   public handleBookItemSelect(itemId: string) {
@@ -37,7 +36,11 @@ export default class HelloBook extends React.Component<IHelloBookProps, IHelloBo
   }
 
   public showList() {
-    return (<ViewList books={this.props.books} onItemSelected={this.handleBookItemSelect} />);
+    return (<ViewList books={this.props.books}
+      onItemSelected={this.handleBookItemSelect}
+      dateService={this.props.dateService}
+      selectedBookId={this.props.selectedBookId}
+      selectedBookIndex={this.props.selectedBookIndex} />);
   }
 
   public showToolbar() {
