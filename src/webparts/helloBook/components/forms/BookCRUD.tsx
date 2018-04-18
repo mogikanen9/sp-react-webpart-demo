@@ -9,30 +9,44 @@ import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 
 class BookCRUD extends React.Component<IBookCRUDProps> {
 
+    private nvName: string;
+    private nvISBN: string;
+    private nvDesc: string;
+    private nvPubDate: Date;
+
     constructor(props: IBookCRUDProps) {
         super();
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleNameChange = this.handleNameChange.bind(this);
+        this.handleISBNChange = this.handleISBNChange.bind(this);
+        this.handleDescChange = this.handleDescChange.bind(this);
     }
 
     public componentDidMount() {
-
+        this.nvName = this.props.book.name;
+        this.nvISBN = this.props.book.isbn;
+        this.nvDesc = this.props.book.description;
     }
 
-    protected handleInputChange(event) {
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-        console.log('name->',name,';value->',value);
-        this.props.updateSelectedBook({
-            isbn: this.props.book.isbn,
-            name: value,
-            description: this.props.book.description,
-            pubDate: this.props.book.pubDate
-        });
+    protected handleNameChange(newValue: string) {
+        this.nvName = newValue;       
+    }
+
+    protected handleISBNChange(newValue: string) {
+        this.nvISBN = newValue;       
+    }
+
+    protected handleDescChange(newValue: string) {
+        this.nvDesc = newValue;       
     }
 
     protected handleSubmit(e) {
+        this.props.updateSelectedBook({
+            isbn: this.nvISBN,
+            name: this.nvName,
+            description: this.nvDesc,
+            pubDate: this.props.book.pubDate
+        });
         this.props.handleSubmit();
     }
 
@@ -51,6 +65,7 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
                     required={true}
                     readOnly={readOnlyMode}
                     value={this.props.book.isbn}
+                    onChanged={this.handleISBNChange}
                 />
                 <DatePicker
                     label='Publication date'
@@ -62,7 +77,7 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
                     required={true}
                     readOnly={readOnlyMode}
                     value={this.props.book.name}
-                    onChange={this.handleInputChange}
+                    onChanged={this.handleNameChange}
                 />
                 <TextField
                     label='Description'
@@ -71,6 +86,7 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
                     rows={4}
                     readOnly={readOnlyMode}
                     value={this.props.book.description}
+                    onChanged={this.handleDescChange}
                 />
                 <PrimaryButton
                     type='submit'

@@ -106,7 +106,9 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         console.log('Updating book->', this.state.selectedBook);
         this.bookService.update(this.state.selectedBook).then((bookId: string) => {
             this.loadBooks();
-        });
+        }).catch((err) => {
+            throw new Error(err);
+        })
     }
 
     protected updateSelectedBookState(book: Book) {
