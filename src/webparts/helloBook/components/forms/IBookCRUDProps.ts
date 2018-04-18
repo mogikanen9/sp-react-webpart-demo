@@ -4,7 +4,7 @@ import { Book } from '../../service/vo/Book';
 interface IBookCRUDProps {
     mode: Mode;
     book?: Book;
-    handleSubmit(book: Book): void;
+    handleSubmit(book: Book, mode: Mode): void;
     history?:any;
 }
 

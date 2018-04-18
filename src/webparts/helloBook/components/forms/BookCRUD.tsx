@@ -61,7 +61,7 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
     }
 
     protected handleSubmit(e) {
-        this.props.handleSubmit(this.state.book);
+        this.props.handleSubmit(this.state.book, this.props.mode);
         this.props.history.push('/home');
     }
 
@@ -113,5 +113,4 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
     }
 }
 
-//export default BookCRUD;
 export default withRouter(BookCRUD);
