@@ -1,4 +1,7 @@
 import * as React from 'react';
+
+import { withRouter } from "react-router-dom";
+
 import { IBookCRUDProps, Mode } from './IBookCRUDProps';
 import { Book } from '../../service/vo/Book';
 import { Link } from 'react-router-dom';
@@ -29,15 +32,15 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
     }
 
     protected handleNameChange(newValue: string) {
-        this.nvName = newValue;       
+        this.nvName = newValue;
     }
 
     protected handleISBNChange(newValue: string) {
-        this.nvISBN = newValue;       
+        this.nvISBN = newValue;
     }
 
     protected handleDescChange(newValue: string) {
-        this.nvDesc = newValue;       
+        this.nvDesc = newValue;
     }
 
     protected handleSubmit(e) {
@@ -48,6 +51,7 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
             pubDate: this.props.book.pubDate
         });
         this.props.handleSubmit();
+        this.props.history.push('/home');
     }
 
     public render() {
@@ -91,13 +95,11 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
                 <PrimaryButton
                     type='submit'
                     onClick={this.handleSubmit}>Submit</PrimaryButton>
-                <DefaultButton
-                    href="home">
-                    Cancel
-                </DefaultButton>
+                <Link to="/home">Cancel</Link>
             </div>
         </div>);
     }
 }
 
-export default BookCRUD;
+//export default BookCRUD;
+export default withRouter(BookCRUD);

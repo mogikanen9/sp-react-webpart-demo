@@ -1,6 +1,8 @@
-import createBrowserHistory from 'history/createBrowserHistory';
+
 import * as React from 'react';
+
 import { HashRouter, Route, Switch } from 'react-router-dom';
+
 import { DateServiceImpl } from '../helloBook/components/util/DateServiceImpl';
 import { IDateService } from '../helloBook/components/util/IDateService';
 import { IAppRouteState } from './IAppRouteState';
@@ -16,12 +18,6 @@ import { BookServiceSTubImpl } from './service/BookServiceStubImpl';
 import { Book } from './service/vo/Book';
 
 
-
-
-
-
-
-const newHistory = createBrowserHistory();
 
 class AppRoute extends React.Component<any, IAppRouteState> {
 
@@ -105,7 +101,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
     protected handleUpdateBook(): void {
         console.log('Updating book->', this.state.selectedBook);
         this.bookService.update(this.state.selectedBook).then((bookId: string) => {
-            this.loadBooks();
+            this.loadBooks();           
         }).catch((err) => {
             throw new Error(err);
         })
@@ -136,7 +132,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
 
     public render() {
         return (
-            <HashRouter history={newHistory}>
+            <HashRouter>
                 <Switch>
                     <Route exact path="/" component={this.showHelloBook} />
                     <Route path="/home" component={this.showHelloBook} />
