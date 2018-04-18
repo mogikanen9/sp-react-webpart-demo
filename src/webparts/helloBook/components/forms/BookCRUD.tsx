@@ -20,10 +20,19 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
         this.handlePubDateChange = this.handlePubDateChange.bind(this);
         this.handleDescChange = this.handleDescChange.bind(this);
 
-        this.state = { book: props.book };
+        this.state = { book: {} };
     }
 
     public componentDidMount() {
+        if (this.props.bookId) {
+            this.props.loadBook(this.props.bookId).then((loadedBook: Book) => {
+                this.setState({
+                    book: loadedBook
+                });
+            }).catch((err) => {
+                throw new Error('Cannot load book ->' + this.props.bookId);
+            });
+        }
 
     }
 
@@ -41,7 +50,7 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
     protected handlePubDateChange(newValue: Date) {
         this.setState({
             book: {
-                isbn:  this.state.book.isbn,
+                isbn: this.state.book.isbn,
                 name: this.state.book.name,
                 description: this.state.book.description,
                 pubDate: newValue
@@ -67,10 +76,10 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
 
     public render() {
         const readOnlyMode: boolean = this.props.mode === Mode.DELETE;
-        
+
         return (<div>
             <h3>Book CRUD Mode {this.props.mode}</h3>
-          
+
             <div>
                 <TextField
                     label='ISBN'
@@ -82,8 +91,8 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                 <DatePicker
                     label='Publication date'
                     isRequired={true}
-                    value={this.state.book.pubDate} 
-                    onSelectDate={this.handlePubDateChange}/>
+                    value={this.state.book.pubDate}
+                    onSelectDate={this.handlePubDateChange} />
                 <TextField
                     label='Name'
                     placeholder='Book name'

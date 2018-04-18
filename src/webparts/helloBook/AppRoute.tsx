@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
-
 import { DateServiceImpl } from '../helloBook/components/util/DateServiceImpl';
 import { IDateService } from '../helloBook/components/util/IDateService';
 import { IAppRouteState } from './IAppRouteState';
@@ -15,6 +14,7 @@ import { BookService } from './service/BookService';
 import { BookServiceSTubImpl } from './service/BookServiceStubImpl';
 import { Book } from './service/vo/Book';
 
+
 class AppRoute extends React.Component<any, IAppRouteState> {
 
     private bookService: BookService;
@@ -28,8 +28,12 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.showHelloBook = this.showHelloBook.bind(this);
         this.showAddBook = this.showAddBook.bind(this);
         this.showEditBook = this.showEditBook.bind(this);
+        this.showDeleteBook = this.showDeleteBook.bind(this);
+        this.handleBookChanges = this.handleBookChanges.bind(this);
+
         this.loadBooks = this.loadBooks.bind(this);
         this.updateSelectedBookId = this.updateSelectedBookId.bind(this);
+        this.loadBookWrapperFunc = this.loadBookWrapperFunc.bind(this);
 
         this.state = {
             books: EMPTY_BOOKS,
@@ -87,43 +91,64 @@ class AppRoute extends React.Component<any, IAppRouteState> {
 
     protected handleBookChanges(book: Book, mode: BookCRUDMode): void {
         console.log('handleBookChanges book->', book);
-        if(mode===BookCRUDMode.EDIT){
+        if (mode === BookCRUDMode.EDIT) {
             this.bookService.update(book).then((bookId: string) => {
                 this.loadBooks();
             }).catch((err) => {
                 throw new Error(err);
             });
-        }else if(mode===BookCRUDMode.DELETE){
+        } else if (mode === BookCRUDMode.DELETE) {
             this.bookService.delete(book.isbn).then((bookId: string) => {
                 this.loadBooks();
             }).catch((err) => {
                 throw new Error(err);
             });
-        }else if(mode===BookCRUDMode.NEW){
+        } else if (mode === BookCRUDMode.NEW) {
 
-        }else{
+        } else {
             throw new Error('Unknown Book CRUD mode');
         }
-       
+
     }
 
     protected showAddBook() {
         const props: IBookCRUDProps = {
             mode: BookCRUDMode.NEW,
             handleSubmit: this.handleBookChanges,
+            loadBook: this.loadBookWrapperFunc
         };
         return <BookCRUD {...props} />;
     }
 
+    protected loadBookWrapperFunc(bookId: string): Promise<Book> {
+        return this.bookService.getById(bookId).then((book: Book) => {
+            return book;
+        }).catch((err) => {
+            console.log(err);
+            throw new Error(err);
+        });
+    }
+
     protected showEditBook() {
+        const props: IBookCRUDProps = {
+            mode: BookCRUDMode.EDIT,
+            bookId: this.state.selectedBookId,
+            handleSubmit: this.handleBookChanges,
+            loadBook: this.loadBookWrapperFunc
+        };
+        return <BookCRUD {...props} />;
+    }
+
+    protected showDeleteBook() {
         return this.bookService.getById(this.state.selectedBookId).then((book: Book) => {
             const props: IBookCRUDProps = {
-                mode: BookCRUDMode.EDIT,
-                book: book,
-                handleSubmit: this.handleBookChanges
+                mode: BookCRUDMode.DELETE,
+                bookId: this.state.selectedBookId,
+                handleSubmit: this.handleBookChanges,
+                loadBook: this.loadBookWrapperFunc
             };
             return <BookCRUD {...props} />;
-        }).catch((err)=>{
+        }).catch((err) => {
             throw new Error(err);
         });
     }
@@ -136,6 +161,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
                     <Route path="/home" component={this.showHelloBook} />
                     <Route path="/add" component={this.showAddBook} />
                     <Route path="/edit" component={this.showEditBook} />
+                    <Route path="/delete" component={this.showDeleteBook} />
                     <Route path="/error" component={this.showErrorPage} />
                 </Switch>
             </HashRouter >);
