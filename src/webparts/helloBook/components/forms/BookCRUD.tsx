@@ -7,80 +7,89 @@ import { Book } from '../../service/vo/Book';
 import { Link } from 'react-router-dom';
 
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
-import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { PrimaryButton, DefaultButton, Button } from 'office-ui-fabric-react/lib/Button';
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
+import { IBookCRUDState } from './IBookCRUDState';
 
-class BookCRUD extends React.Component<IBookCRUDProps> {
-
-    private nvName: string;
-    private nvISBN: string;
-    private nvDesc: string;
-    private nvPubDate: Date;
+class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
 
     constructor(props: IBookCRUDProps) {
         super();
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleISBNChange = this.handleISBNChange.bind(this);
+        this.handlePubDateChange = this.handlePubDateChange.bind(this);
         this.handleDescChange = this.handleDescChange.bind(this);
+
+        this.state = { book: props.book };
     }
 
     public componentDidMount() {
-        this.nvName = this.props.book.name;
-        this.nvISBN = this.props.book.isbn;
-        this.nvDesc = this.props.book.description;
+
     }
 
     protected handleNameChange(newValue: string) {
-        this.nvName = newValue;
+        this.setState({
+            book: {
+                isbn: this.state.book.isbn,
+                name: newValue,
+                description: this.state.book.description,
+                pubDate: this.state.book.pubDate
+            }
+        });
     }
 
-    protected handleISBNChange(newValue: string) {
-        this.nvISBN = newValue;
+    protected handlePubDateChange(newValue: Date) {
+        this.setState({
+            book: {
+                isbn:  this.state.book.isbn,
+                name: this.state.book.name,
+                description: this.state.book.description,
+                pubDate: newValue
+            }
+        });
     }
 
     protected handleDescChange(newValue: string) {
-        this.nvDesc = newValue;
+        this.setState({
+            book: {
+                isbn: this.state.book.isbn,
+                name: this.state.book.name,
+                description: newValue,
+                pubDate: this.state.book.pubDate
+            }
+        });
     }
 
     protected handleSubmit(e) {
-        this.props.updateSelectedBook({
-            isbn: this.nvISBN,
-            name: this.nvName,
-            description: this.nvDesc,
-            pubDate: this.props.book.pubDate
-        });
-        this.props.handleSubmit();
+        this.props.handleSubmit(this.state.book);
         this.props.history.push('/home');
     }
 
     public render() {
         const readOnlyMode: boolean = this.props.mode === Mode.DELETE;
-
+        
         return (<div>
             <h3>Book CRUD Mode {this.props.mode}</h3>
-            <p>
-                <Link to="/home">Home</Link>
-            </p>
+          
             <div>
                 <TextField
                     label='ISBN'
                     placeholder='ISBN'
                     required={true}
-                    readOnly={readOnlyMode}
-                    value={this.props.book.isbn}
-                    onChanged={this.handleISBNChange}
+                    readOnly={true}
+                    value={this.state.book.isbn}
                 />
                 <DatePicker
                     label='Publication date'
                     isRequired={true}
-                    value={this.props.book.pubDate} />
+                    value={this.state.book.pubDate} 
+                    onSelectDate={this.handlePubDateChange}/>
                 <TextField
                     label='Name'
                     placeholder='Book name'
                     required={true}
                     readOnly={readOnlyMode}
-                    value={this.props.book.name}
+                    value={this.state.book.name}
                     onChanged={this.handleNameChange}
                 />
                 <TextField
@@ -89,13 +98,16 @@ class BookCRUD extends React.Component<IBookCRUDProps> {
                     multiline={true}
                     rows={4}
                     readOnly={readOnlyMode}
-                    value={this.props.book.description}
+                    value={this.state.book.description}
                     onChanged={this.handleDescChange}
                 />
                 <PrimaryButton
                     type='submit'
                     onClick={this.handleSubmit}>Submit</PrimaryButton>
-                <Link to="/home">Cancel</Link>
+                <Button>
+                    <Link to="/home">Cancel</Link>
+                </Button>
+
             </div>
         </div>);
     }

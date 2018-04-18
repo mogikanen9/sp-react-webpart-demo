@@ -1,6 +1,4 @@
-
 import * as React from 'react';
-
 import { HashRouter, Route, Switch } from 'react-router-dom';
 
 import { DateServiceImpl } from '../helloBook/components/util/DateServiceImpl';
@@ -16,8 +14,6 @@ import { EMPTY_BOOKS, NOT_SELECTED_BOOK_ID, NOT_SELECTED_BOOK_INDEX } from './co
 import { BookService } from './service/BookService';
 import { BookServiceSTubImpl } from './service/BookServiceStubImpl';
 import { Book } from './service/vo/Book';
-
-
 
 class AppRoute extends React.Component<any, IAppRouteState> {
 
@@ -36,7 +32,6 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.updateSelectedBookId = this.updateSelectedBookId.bind(this);
         this.handleAddBook = this.handleAddBook.bind(this);
         this.handleUpdateBook = this.handleUpdateBook.bind(this);
-        this.updateSelectedBookState = this.updateSelectedBookState.bind(this);
 
         this.state = {
             books: EMPTY_BOOKS,
@@ -98,24 +93,20 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         console.log('Creating new book->', this.state.selectedBook);
     }
 
-    protected handleUpdateBook(): void {
-        console.log('Updating book->', this.state.selectedBook);
-        this.bookService.update(this.state.selectedBook).then((bookId: string) => {
+    protected handleUpdateBook(book: Book): void {
+        console.log('Updating book->', book);
+        this.bookService.update(book).then((bookId: string) => {
+            this.setState({ selectedBook: book });
             this.loadBooks();           
         }).catch((err) => {
             throw new Error(err);
-        })
-    }
-
-    protected updateSelectedBookState(book: Book) {
-        this.setState({ selectedBook: book });
+        });
     }
 
     protected showAddBook() {
         const props: IBookCRUDProps = {
             mode: BookCRUDMode.NEW,
             handleSubmit: this.handleAddBook,
-            updateSelectedBook: this.updateSelectedBookState
         };
         return <BookCRUD {...props} />;
     }
@@ -124,8 +115,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         const props: IBookCRUDProps = {
             mode: BookCRUDMode.EDIT,
             book: this.state.selectedBook,
-            handleSubmit: this.handleUpdateBook,
-            updateSelectedBook: this.updateSelectedBookState
+            handleSubmit: this.handleUpdateBook
         };
         return <BookCRUD {...props} />;
     }

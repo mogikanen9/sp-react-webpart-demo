@@ -4,8 +4,7 @@ import { Book } from '../../service/vo/Book';
 interface IBookCRUDProps {
     mode: Mode;
     book?: Book;
-    handleSubmit(): void;
-    updateSelectedBook(book: Book): void;
+    handleSubmit(book: Book): void;
     history?:any;
 }
 
