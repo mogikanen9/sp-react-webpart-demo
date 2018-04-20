@@ -26,6 +26,7 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handlePubDateChange = this.handlePubDateChange.bind(this);
         this.handleDescChange = this.handleDescChange.bind(this);
+        this.handleISBNChange = this.handleISBNChange.bind(this);
 
         this.state = { book: {} };
 
@@ -44,6 +45,19 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
             });
         }
 
+    }
+
+    protected handleISBNChange(newValue: string) {
+        if (this.props.mode === Mode.NEW) {
+            this.setState({
+                book: {
+                    isbn: newValue,
+                    name: this.state.book.name,
+                    description: this.state.book.description,
+                    pubDate: this.state.book.pubDate
+                }
+            });
+        }
     }
 
     protected handleNameChange(newValue: string) {
@@ -96,9 +110,10 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     label='ISBN'
                     placeholder='ISBN'
                     required={true}
-                    readOnly={true}
+                    readOnly={this.props.mode !== Mode.NEW}
                     borderless={true}
                     value={this.state.book.isbn}
+                    onChanged={this.handleISBNChange}
                 />
                 <DatePicker
                     label='Publication date'

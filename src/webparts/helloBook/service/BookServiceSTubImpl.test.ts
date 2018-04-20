@@ -54,21 +54,22 @@ describe('BookServiceSTubImpl', () => {
     });
 
     describe('#create', () => {
+        const NEW_BOOK_ID = '00-99-AA-789';
         it('create book', () => {
             const newBook = {
-                isbn: '00-99-AA-789',
+                isbn: NEW_BOOK_ID,
                 name: 'New cool book',
                 description: 'New book desc',
                 pubDate: moment("2003-12-25").toDate()
             };
             return sut.create(newBook).then((newBookId: string) => {
                 assert.isNotNull(newBookId);
-                assert.isTrue(newBookId === '00-99-AA-789x','Create: Book ISBNs do not match ');
+                assert.isTrue(newBookId === NEW_BOOK_ID, 'Create: Book ISBNs do not match ');
                 return newBookId;
             }).then((newBookId: string) => {
                 return sut.getById(newBookId).then((book: Book) => {
                     assert.isNotNull(book);
-                    assert.isTrue(book.isbn === '00-99-AA-789','GetById: Book ISBNs do not match');
+                    assert.isTrue(book.isbn === NEW_BOOK_ID, 'GetById: Book ISBNs do not match');
                 }).catch((err) => {
                     assert.fail('ERR->getById->', err);
                 });

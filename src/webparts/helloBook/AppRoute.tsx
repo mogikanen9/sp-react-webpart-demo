@@ -52,7 +52,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         let rs = -1;
         if (bookId && bookId !== NOT_SELECTED_BOOK_ID) {
             for (let i = 0; i < books.length; i++) {
-                if (books[i]!=null && books[i].isbn === bookId) {
+                if (books[i] != null && books[i].isbn === bookId) {
                     rs = i;
                     break;
                 }
@@ -104,7 +104,11 @@ class AppRoute extends React.Component<any, IAppRouteState> {
                 throw new Error(err);
             });
         } else if (mode === BookCRUDMode.NEW) {
-
+            this.bookService.create(book).then((bookId: string) => {
+                this.loadBooks();
+            }).catch((err) => {
+                throw new Error(err);
+            });
         } else {
             throw new Error('Unknown Book CRUD mode');
         }
