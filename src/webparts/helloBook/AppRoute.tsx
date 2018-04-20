@@ -52,7 +52,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         let rs = -1;
         if (bookId && bookId !== NOT_SELECTED_BOOK_ID) {
             for (let i = 0; i < books.length; i++) {
-                if (books[i].isbn === bookId) {
+                if (books[i]!=null && books[i].isbn === bookId) {
                     rs = i;
                     break;
                 }
