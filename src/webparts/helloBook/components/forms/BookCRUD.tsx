@@ -1,15 +1,22 @@
-import * as React from 'react';
-
-import { withRouter } from "react-router-dom";
-
-import { IBookCRUDProps, Mode } from './IBookCRUDProps';
-import { Book } from '../../service/vo/Book';
-import { Link } from 'react-router-dom';
-
-import { TextField } from 'office-ui-fabric-react/lib/TextField';
-import { PrimaryButton, DefaultButton, Button } from 'office-ui-fabric-react/lib/Button';
+import { Button, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
+import { TextField } from 'office-ui-fabric-react/lib/TextField';
+import * as React from 'react';
+import { Link, withRouter } from "react-router-dom";
+import { Book } from '../../service/vo/Book';
+import { IBookCRUDProps, Mode } from './IBookCRUDProps';
 import { IBookCRUDState } from './IBookCRUDState';
+
+const HEADER = new Map<Mode, string>();
+HEADER.set(Mode.DELETE, 'Delete book?');
+HEADER.set(Mode.EDIT, 'Update book details');
+HEADER.set(Mode.NEW, 'Add book');
+
+const SUBMIT_LABEL = new Map<Mode, string>();
+SUBMIT_LABEL.set(Mode.DELETE, 'Delete');
+SUBMIT_LABEL.set(Mode.EDIT, 'Update');
+SUBMIT_LABEL.set(Mode.NEW, 'Add');
+
 
 class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
 
@@ -21,10 +28,13 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
         this.handleDescChange = this.handleDescChange.bind(this);
 
         this.state = { book: {} };
+
     }
 
     public componentDidMount() {
-        if (this.props.bookId) {
+        if (this.props.bookId
+            && (this.props.mode === Mode.EDIT ||
+                this.props.mode === Mode.DELETE)) {
             this.props.loadBook(this.props.bookId).then((loadedBook: Book) => {
                 this.setState({
                     book: loadedBook
@@ -74,11 +84,12 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
         this.props.history.push('/home');
     }
 
+
     public render() {
         const readOnlyMode: boolean = this.props.mode === Mode.DELETE;
 
         return (<div>
-            <h3>Book CRUD Mode {this.props.mode}</h3>
+            <h3>{HEADER.get(this.props.mode)}</h3>
 
             <div>
                 <TextField
@@ -86,11 +97,14 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     placeholder='ISBN'
                     required={true}
                     readOnly={true}
+                    borderless={true}
                     value={this.state.book.isbn}
                 />
                 <DatePicker
                     label='Publication date'
                     isRequired={true}
+                    disabled={readOnlyMode}
+                    borderless={readOnlyMode}
                     value={this.state.book.pubDate}
                     onSelectDate={this.handlePubDateChange} />
                 <TextField
@@ -98,6 +112,7 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     placeholder='Book name'
                     required={true}
                     readOnly={readOnlyMode}
+                    borderless={readOnlyMode}
                     value={this.state.book.name}
                     onChanged={this.handleNameChange}
                 />
@@ -107,12 +122,15 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     multiline={true}
                     rows={4}
                     readOnly={readOnlyMode}
+                    borderless={readOnlyMode}
                     value={this.state.book.description}
                     onChanged={this.handleDescChange}
                 />
                 <PrimaryButton
                     type='submit'
-                    onClick={this.handleSubmit}>Submit</PrimaryButton>
+                    onClick={this.handleSubmit}>
+                    {SUBMIT_LABEL.get(this.props.mode)}
+                </PrimaryButton>
                 <Button>
                     <Link to="/home">Cancel</Link>
                 </Button>

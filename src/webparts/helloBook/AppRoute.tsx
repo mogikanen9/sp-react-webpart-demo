@@ -140,17 +140,13 @@ class AppRoute extends React.Component<any, IAppRouteState> {
     }
 
     protected showDeleteBook() {
-        return this.bookService.getById(this.state.selectedBookId).then((book: Book) => {
-            const props: IBookCRUDProps = {
-                mode: BookCRUDMode.DELETE,
-                bookId: this.state.selectedBookId,
-                handleSubmit: this.handleBookChanges,
-                loadBook: this.loadBookWrapperFunc
-            };
-            return <BookCRUD {...props} />;
-        }).catch((err) => {
-            throw new Error(err);
-        });
+        const props: IBookCRUDProps = {
+            mode: BookCRUDMode.DELETE,
+            bookId: this.state.selectedBookId,
+            handleSubmit: this.handleBookChanges,
+            loadBook: this.loadBookWrapperFunc
+        };
+        return <BookCRUD {...props} />;
     }
 
     public render() {
