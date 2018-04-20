@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
-
 import { DateServiceImpl } from '../helloBook/components/util/DateServiceImpl';
 import { IDateService } from '../helloBook/components/util/IDateService';
 import { IAppRouteState } from './IAppRouteState';
@@ -15,6 +14,7 @@ import { BookService } from './service/BookService';
 import { BookServiceSTubImpl } from './service/BookServiceStubImpl';
 import { Book } from './service/vo/Book';
 
+
 class AppRoute extends React.Component<any, IAppRouteState> {
 
     private bookService: BookService;
@@ -28,16 +28,17 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.showHelloBook = this.showHelloBook.bind(this);
         this.showAddBook = this.showAddBook.bind(this);
         this.showEditBook = this.showEditBook.bind(this);
+        this.showDeleteBook = this.showDeleteBook.bind(this);
+        this.handleBookChanges = this.handleBookChanges.bind(this);
+
         this.loadBooks = this.loadBooks.bind(this);
         this.updateSelectedBookId = this.updateSelectedBookId.bind(this);
-        this.handleAddBook = this.handleAddBook.bind(this);
-        this.handleUpdateBook = this.handleUpdateBook.bind(this);
+        this.loadBookWrapperFunc = this.loadBookWrapperFunc.bind(this);
 
         this.state = {
             books: EMPTY_BOOKS,
             selectedBookId: NOT_SELECTED_BOOK_ID,
-            selectedBookIndex: NOT_SELECTED_BOOK_INDEX,
-            selectedBook: new Book()
+            selectedBookIndex: NOT_SELECTED_BOOK_INDEX
         };
     }
 
@@ -50,9 +51,8 @@ class AppRoute extends React.Component<any, IAppRouteState> {
     protected getSelectedItemIndex(books: Array<Book>, bookId: string): number {
         let rs = -1;
         if (bookId && bookId !== NOT_SELECTED_BOOK_ID) {
-            //rs = _.findIndex(books, (book) => { return book.isbn === bookId; });
             for (let i = 0; i < books.length; i++) {
-                if (books[i].isbn === bookId) {
+                if (books[i]!=null && books[i].isbn === bookId) {
                     rs = i;
                     break;
                 }
@@ -66,7 +66,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         if (bookId && bookId !== NOT_SELECTED_BOOK_ID) {
             this.bookService.getById(bookId).then((book) => {
                 const newBookIndex: number = this.getSelectedItemIndex(this.state.books, bookId);
-                this.setState({ selectedBook: book, selectedBookIndex: newBookIndex });
+                this.setState({ selectedBookIndex: newBookIndex });
             });
         }
     }
@@ -89,33 +89,62 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         return <GenericScreen {...props} />;
     }
 
-    protected handleAddBook(): void {
-        console.log('Creating new book->', this.state.selectedBook);
-    }
+    protected handleBookChanges(book: Book, mode: BookCRUDMode): void {
+        console.log('handleBookChanges book->', book);
+        if (mode === BookCRUDMode.EDIT) {
+            this.bookService.update(book).then((bookId: string) => {
+                this.loadBooks();
+            }).catch((err) => {
+                throw new Error(err);
+            });
+        } else if (mode === BookCRUDMode.DELETE) {
+            this.bookService.delete(book.isbn).then((bookId: string) => {
+                this.loadBooks();
+            }).catch((err) => {
+                throw new Error(err);
+            });
+        } else if (mode === BookCRUDMode.NEW) {
 
-    protected handleUpdateBook(book: Book): void {
-        console.log('Updating book->', book);
-        this.bookService.update(book).then((bookId: string) => {
-            this.setState({ selectedBook: book });
-            this.loadBooks();           
-        }).catch((err) => {
-            throw new Error(err);
-        });
+        } else {
+            throw new Error('Unknown Book CRUD mode');
+        }
+
     }
 
     protected showAddBook() {
         const props: IBookCRUDProps = {
             mode: BookCRUDMode.NEW,
-            handleSubmit: this.handleAddBook,
+            handleSubmit: this.handleBookChanges,
+            loadBook: this.loadBookWrapperFunc
         };
         return <BookCRUD {...props} />;
+    }
+
+    protected loadBookWrapperFunc(bookId: string): Promise<Book> {
+        return this.bookService.getById(bookId).then((book: Book) => {
+            return book;
+        }).catch((err) => {
+            console.log(err);
+            throw new Error(err);
+        });
     }
 
     protected showEditBook() {
         const props: IBookCRUDProps = {
             mode: BookCRUDMode.EDIT,
-            book: this.state.selectedBook,
-            handleSubmit: this.handleUpdateBook
+            bookId: this.state.selectedBookId,
+            handleSubmit: this.handleBookChanges,
+            loadBook: this.loadBookWrapperFunc
+        };
+        return <BookCRUD {...props} />;
+    }
+
+    protected showDeleteBook() {
+        const props: IBookCRUDProps = {
+            mode: BookCRUDMode.DELETE,
+            bookId: this.state.selectedBookId,
+            handleSubmit: this.handleBookChanges,
+            loadBook: this.loadBookWrapperFunc
         };
         return <BookCRUD {...props} />;
     }
@@ -128,6 +157,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
                     <Route path="/home" component={this.showHelloBook} />
                     <Route path="/add" component={this.showAddBook} />
                     <Route path="/edit" component={this.showEditBook} />
+                    <Route path="/delete" component={this.showDeleteBook} />
                     <Route path="/error" component={this.showErrorPage} />
                 </Switch>
             </HashRouter >);

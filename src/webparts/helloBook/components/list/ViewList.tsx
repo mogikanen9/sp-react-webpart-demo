@@ -76,14 +76,16 @@ export class ViewList extends React.Component<IViewListProps, {}>{
         let items: {}[] = new Array<{}>();
 
         books.map((book: Book) => {
-            items.push({
-                key: book.isbn,
-                isbn: book.isbn,
-                pubDate: this.props.dateService.format(book.pubDate, 'N/A'),
-                //pubDate: this.printDate(new Date()),
-                name: book.name,
-                desc: book.description
-            });
+            if (book) {
+                items.push({
+                    key: book.isbn,
+                    isbn: book.isbn,
+                    pubDate: this.props.dateService.format(book.pubDate, 'N/A'),
+                    //pubDate: this.printDate(new Date()),
+                    name: book.name,
+                    desc: book.description
+                });
+            }
         });
 
         return items;

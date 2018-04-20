@@ -1,13 +1,8 @@
-/// <reference types="mocha" />
-/// <reference types="sinon" />
-
-import * as mocha from 'mocha';
-
-import { assert } from 'chai';
-import { expect } from 'chai';
-
+import { assert, expect } from 'chai';
 import { BookServiceSTubImpl } from './BookServiceStubImpl';
 import { Book } from "./vo/Book";
+
+
 
 declare const sinon: sinon.SinonStatic;
 
@@ -87,6 +82,25 @@ describe('BookServiceSTubImpl', () => {
                     assert.include(book.description, '-modified', 'Book desc ends with "-modified"');
                     return true;
                 });
+            });
+        });
+    });
+
+    describe('#delete', () => {
+        it('delete book', () => {
+            return sut.delete(SIMPLE_BOOK_ID).then((bookId: string) => {
+                assert.isNotNull(bookId);
+                assert.isTrue(bookId === SIMPLE_BOOK_ID);
+                return sut.getById(bookId);
+            }).then((book: Book) => {
+                assert.fail('Unreachable');
+                return false;
+            }).catch((err) => {
+                assert.include(err.message, 'Book with isbn->' + SIMPLE_BOOK_ID + ' was not found');
+                return true;
+            }).then((flag: boolean) => {
+                assert.isTrue(flag);
+                return flag;
             });
         });
     });

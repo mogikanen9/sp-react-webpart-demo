@@ -3,9 +3,10 @@ import { Book } from '../../service/vo/Book';
 
 interface IBookCRUDProps {
     mode: Mode;
-    book?: Book;
-    handleSubmit(book: Book): void;
-    history?:any;
+    bookId?: string;
+    handleSubmit(book: Book, mode: Mode): void;
+    loadBook(bookId: string): Promise<Book>;
+    history?: any;
 }
 
 enum Mode {

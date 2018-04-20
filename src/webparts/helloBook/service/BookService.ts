@@ -5,4 +5,5 @@ export interface BookService {
     getById(bookId: string): Promise<Book>;
     create(book: Book): Promise<string>;
     update (book: Book): Promise<string>;
+    delete (bookId: string): Promise<string>;
 }
