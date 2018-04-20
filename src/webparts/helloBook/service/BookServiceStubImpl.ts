@@ -55,7 +55,7 @@ const INIT_BOOK_DATA = [
     }];
 
 export class BookServiceSTubImpl implements BookService {
-    
+
     private bookDataStore: Map<string, Book>;
 
     constructor() {
@@ -67,10 +67,10 @@ export class BookServiceSTubImpl implements BookService {
 
     public delete(bookId: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            if(this.bookDataStore.has(bookId)){
-                this.bookDataStore.set(bookId,null);
+            if (this.bookDataStore.has(bookId)) {
+                this.bookDataStore.set(bookId, null);
                 resolve(bookId);
-            }else {
+            } else {
                 reject(new Error('Book with isbn->' + bookId + ' was not found.'));
             }
         });
@@ -88,7 +88,14 @@ export class BookServiceSTubImpl implements BookService {
         });
     }
     public create(book: Book): Promise<string> {
-        throw new Error("Method not implemented.");
+        return new Promise((resolve, reject) => {
+            if (this.bookDataStore.has(book.isbn)) {
+                reject(book.isbn);
+            } else {
+                this.bookDataStore.set(book.isbn, book);
+                resolve(book.isbn);
+            }
+        });
     }
     public update(book: Book): Promise<string> {
         return new Promise((resolve, reject) => {
