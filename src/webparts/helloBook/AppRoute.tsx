@@ -34,11 +34,14 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.loadBooks = this.loadBooks.bind(this);
         this.updateSelectedBookId = this.updateSelectedBookId.bind(this);
         this.loadBookWrapperFunc = this.loadBookWrapperFunc.bind(this);
+        this.handleError = this.handleError.bind(this);
+        this.resetErrorState = this.resetErrorState.bind(this);
 
         this.state = {
             books: EMPTY_BOOKS,
             selectedBookId: NOT_SELECTED_BOOK_ID,
-            selectedBookIndex: NOT_SELECTED_BOOK_INDEX
+            selectedBookIndex: NOT_SELECTED_BOOK_INDEX,
+            errorOccured: false
         };
     }
 
@@ -85,8 +88,20 @@ class AppRoute extends React.Component<any, IAppRouteState> {
     }
 
     protected showErrorPage() {
-        const props: IGenericScreenProps = { message: '', code: '' };
+        const props: IGenericScreenProps = {
+            customMessage: this.state.errorMessage,
+            error: this.state.error,
+            resetAndTryAgain: () => { this.resetErrorState(false, null, null); }
+        };
         return <GenericScreen {...props} />;
+    }
+
+    protected resetErrorState(flag: boolean, err: Error, customMsg?: string) {
+        this.setState({ errorOccured: flag });
+    }
+
+    protected handleError(err: Error, customMsg?: string) {
+        this.setState({ errorOccured: true, error: err, errorMessage: customMsg });
     }
 
     protected handleBookChanges(book: Book, mode: BookCRUDMode): void {
@@ -95,24 +110,26 @@ class AppRoute extends React.Component<any, IAppRouteState> {
             this.bookService.update(book).then((bookId: string) => {
                 this.loadBooks();
             }).catch((err) => {
-                throw new Error(err);
+                this.handleError(err, 'Book cannot be updated.');
+                //throw new Error(err);
             });
         } else if (mode === BookCRUDMode.DELETE) {
             this.bookService.delete(book.isbn).then((bookId: string) => {
                 this.loadBooks();
             }).catch((err) => {
-                throw new Error(err);
+                this.handleError(err, 'Book cannot be removed.');
+                //throw new Error(err);
             });
         } else if (mode === BookCRUDMode.NEW) {
             this.bookService.create(book).then((bookId: string) => {
                 this.loadBooks();
             }).catch((err) => {
-                throw new Error(err);
+                this.handleError(err, 'Book cannot be created.');
+                //throw new Error(err);
             });
         } else {
             throw new Error('Unknown Book CRUD mode');
         }
-
     }
 
     protected showAddBook() {
@@ -153,18 +170,25 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         return <BookCRUD {...props} />;
     }
 
+    protected renderRooutes() {
+        return (<HashRouter>
+            <Switch>
+                <Route exact path="/" component={this.showHelloBook} />
+                <Route path="/home" component={this.showHelloBook} />
+                <Route path="/add" component={this.showAddBook} />
+                <Route path="/edit" component={this.showEditBook} />
+                <Route path="/delete" component={this.showDeleteBook} />
+                <Route path="/error" component={this.showErrorPage} />
+            </Switch>
+        </HashRouter >);
+    }
+
     public render() {
-        return (
-            <HashRouter>
-                <Switch>
-                    <Route exact path="/" component={this.showHelloBook} />
-                    <Route path="/home" component={this.showHelloBook} />
-                    <Route path="/add" component={this.showAddBook} />
-                    <Route path="/edit" component={this.showEditBook} />
-                    <Route path="/delete" component={this.showDeleteBook} />
-                    <Route path="/error" component={this.showErrorPage} />
-                </Switch>
-            </HashRouter >);
+        if (this.state.errorOccured) {
+            return this.showErrorPage();
+        } else {
+            return this.renderRooutes();
+        }
     }
 }
 
