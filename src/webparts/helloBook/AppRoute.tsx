@@ -29,6 +29,8 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.showAddBook = this.showAddBook.bind(this);
         this.showEditBook = this.showEditBook.bind(this);
         this.showDeleteBook = this.showDeleteBook.bind(this);
+        this.showBookCRUD = this.showBookCRUD.bind(this);
+
         this.handleBookChanges = this.handleBookChanges.bind(this);
 
         this.loadBooks = this.loadBooks.bind(this);
@@ -36,6 +38,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.loadBookWrapperFunc = this.loadBookWrapperFunc.bind(this);
         this.handleError = this.handleError.bind(this);
         this.resetErrorState = this.resetErrorState.bind(this);
+        this.bookExistsWrapperFunc = this.bookExistsWrapperFunc.bind(this);
 
         this.state = {
             books: EMPTY_BOOKS,
@@ -132,15 +135,6 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         }
     }
 
-    protected showAddBook() {
-        const props: IBookCRUDProps = {
-            mode: BookCRUDMode.NEW,
-            handleSubmit: this.handleBookChanges,
-            loadBook: this.loadBookWrapperFunc
-        };
-        return <BookCRUD {...props} />;
-    }
-
     protected loadBookWrapperFunc(bookId: string): Promise<Book> {
         return this.bookService.getById(bookId).then((book: Book) => {
             return book;
@@ -150,24 +144,35 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         });
     }
 
-    protected showEditBook() {
+    protected bookExistsWrapperFunc(bookId: string): Promise<boolean> {
+        return this.bookService.getById(bookId).then((book: Book) => {
+            return (book != null);
+        }).catch((err) => {
+            console.log(err);
+            return false;
+        });
+    }
+
+    protected showBookCRUD(theMode: BookCRUDMode) {
         const props: IBookCRUDProps = {
-            mode: BookCRUDMode.EDIT,
-            bookId: this.state.selectedBookId,
+            mode: theMode,
             handleSubmit: this.handleBookChanges,
-            loadBook: this.loadBookWrapperFunc
+            loadBook: this.loadBookWrapperFunc,
+            bookExsists: this.bookExistsWrapperFunc
         };
         return <BookCRUD {...props} />;
     }
 
+    protected showAddBook() {
+        return this.showBookCRUD(BookCRUDMode.NEW);
+    }
+
+    protected showEditBook() {
+        return this.showBookCRUD(BookCRUDMode.EDIT);
+    }
+
     protected showDeleteBook() {
-        const props: IBookCRUDProps = {
-            mode: BookCRUDMode.DELETE,
-            bookId: this.state.selectedBookId,
-            handleSubmit: this.handleBookChanges,
-            loadBook: this.loadBookWrapperFunc
-        };
-        return <BookCRUD {...props} />;
+        return this.showBookCRUD(BookCRUDMode.DELETE);
     }
 
     protected renderRooutes() {

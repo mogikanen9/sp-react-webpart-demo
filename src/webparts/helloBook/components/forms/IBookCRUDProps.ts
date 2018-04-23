@@ -6,6 +6,7 @@ interface IBookCRUDProps {
     bookId?: string;
     handleSubmit(book: Book, mode: Mode): void;
     loadBook(bookId: string): Promise<Book>;
+    bookExsists(bookId: string): Promise<boolean>;
     history?: any;
 }
 

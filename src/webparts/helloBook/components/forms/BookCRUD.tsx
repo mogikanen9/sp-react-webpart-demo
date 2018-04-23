@@ -1,11 +1,15 @@
-import { Button, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import * as React from 'react';
+
+import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
-import * as React from 'react';
+import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
+
 import { Link, withRouter } from "react-router-dom";
 import { Book } from '../../service/vo/Book';
 import { IBookCRUDProps, Mode } from './IBookCRUDProps';
 import { IBookCRUDState } from './IBookCRUDState';
+
 
 const HEADER = new Map<Mode, string>();
 HEADER.set(Mode.DELETE, 'Delete book?');
@@ -27,8 +31,9 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
         this.handlePubDateChange = this.handlePubDateChange.bind(this);
         this.handleDescChange = this.handleDescChange.bind(this);
         this.handleISBNChange = this.handleISBNChange.bind(this);
+        this.closeDialog = this.closeDialog.bind(this);
 
-        this.state = { book: {} };
+        this.state = { book: {}, showNotification: false };
 
     }
 
@@ -94,10 +99,51 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
     }
 
     protected handleSubmit(e) {
-        this.props.handleSubmit(this.state.book, this.props.mode);
-        this.props.history.push('/home');
+        if (this.props.mode === Mode.NEW) {
+            this.props.bookExsists(this.state.book.isbn).then((rs: boolean) => {
+                if (rs !== true) {
+                    this.setState({ showNotification: true });
+                } else {
+                    this.props.handleSubmit(this.state.book, this.props.mode);
+                    this.props.history.push('/home');
+                }
+            });
+        } else { //EDIT and DELETE
+            this.props.handleSubmit(this.state.book, this.props.mode);
+            this.props.history.push('/home');
+        }
+
     }
 
+    protected closeDialog() {
+        this.setState({ showNotification: false });
+    }
+
+    protected showNotificationDialog() {
+        return (
+            <Dialog
+                hidden={!this.state.showNotification}
+                onDismiss={this.closeDialog}
+                dialogContentProps={{
+                    type: DialogType.normal,
+                    title: 'Book cannot be created',
+                    subText: 'Book with ISBN->'
+                        + this.state.book.isbn + ' already exists.'
+                }}
+                modalProps={{
+                    titleAriaId: 'myLabelId',
+                    subtitleAriaId: 'mySubTextId',
+                    isBlocking: true,
+                    containerClassName: 'ms-dialogMainOverride'
+                }}
+            >
+                {null /** You can also include null values as the result of conditionals */}
+                <DialogFooter>
+                    <PrimaryButton onClick={this.closeDialog} text='Got it' />
+                </DialogFooter>
+            </Dialog>
+        );
+    }
 
     public render() {
         const readOnlyMode: boolean = this.props.mode === Mode.DELETE;
@@ -146,10 +192,12 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     onClick={this.handleSubmit}>
                     {SUBMIT_LABEL.get(this.props.mode)}
                 </PrimaryButton>
-                <Button>
+                <DefaultButton>
                     <Link to="/home">Cancel</Link>
-                </Button>
-
+                </DefaultButton>
+            </div>
+            <div>
+                {this.showNotificationDialog()}
             </div>
         </div>);
     }
