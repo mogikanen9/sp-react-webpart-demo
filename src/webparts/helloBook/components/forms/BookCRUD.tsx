@@ -101,7 +101,7 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
     protected handleSubmit(e) {
         if (this.props.mode === Mode.NEW) {
             this.props.bookExsists(this.state.book.isbn).then((rs: boolean) => {
-                if (rs !== true) {
+                if (rs === true) {
                     this.setState({ showNotification: true });
                 } else {
                     this.props.handleSubmit(this.state.book, this.props.mode);

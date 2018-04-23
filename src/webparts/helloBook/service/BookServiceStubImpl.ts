@@ -76,6 +76,14 @@ export class BookServiceSTubImpl implements BookService {
         });
     }
 
+
+    public exists(bookId: string): Promise<boolean>{
+        return new Promise((resolve, reject) => {
+            const theBook: Book = this.bookDataStore.get(bookId);           
+            resolve(theBook!=null);
+        });
+    }
+
     public getById(bookId: string): Promise<Book> {
 
         return new Promise((resolve, reject) => {

@@ -145,17 +145,18 @@ class AppRoute extends React.Component<any, IAppRouteState> {
     }
 
     protected bookExistsWrapperFunc(bookId: string): Promise<boolean> {
-        return this.bookService.getById(bookId).then((book: Book) => {
-            return (book != null);
+        return this.bookService.exists(bookId).then((rs: boolean) => {
+           return (rs);
         }).catch((err) => {
             console.log(err);
-            return false;
+            throw new Error(err);
         });
     }
 
-    protected showBookCRUD(theMode: BookCRUDMode) {
+    protected showBookCRUD(theMode:BookCRUDMode){
         const props: IBookCRUDProps = {
-            mode: theMode,
+            mode:theMode,
+            bookId: this.state.selectedBookId,
             handleSubmit: this.handleBookChanges,
             loadBook: this.loadBookWrapperFunc,
             bookExsists: this.bookExistsWrapperFunc
@@ -164,15 +165,15 @@ class AppRoute extends React.Component<any, IAppRouteState> {
     }
 
     protected showAddBook() {
-        return this.showBookCRUD(BookCRUDMode.NEW);
+        return  this.showBookCRUD(BookCRUDMode.NEW);       
     }
 
     protected showEditBook() {
-        return this.showBookCRUD(BookCRUDMode.EDIT);
+        return  this.showBookCRUD(BookCRUDMode.EDIT);  
     }
 
     protected showDeleteBook() {
-        return this.showBookCRUD(BookCRUDMode.DELETE);
+        return  this.showBookCRUD(BookCRUDMode.DELETE);
     }
 
     protected renderRooutes() {
