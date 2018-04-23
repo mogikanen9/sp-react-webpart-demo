@@ -1,14 +1,14 @@
-import * as React from 'react';
-
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
+import { Dialog, DialogFooter, DialogType } from 'office-ui-fabric-react/lib/Dialog';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
-import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
-
+import * as React from 'react';
 import { Link, withRouter } from "react-router-dom";
 import { Book } from '../../service/vo/Book';
 import { IBookCRUDProps, Mode } from './IBookCRUDProps';
 import { IBookCRUDState } from './IBookCRUDState';
+
+
 
 
 const HEADER = new Map<Mode, string>();
@@ -32,9 +32,13 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
         this.handleDescChange = this.handleDescChange.bind(this);
         this.handleISBNChange = this.handleISBNChange.bind(this);
         this.closeDialog = this.closeDialog.bind(this);
+        this.bookDataIsValid = this.bookDataIsValid.bind(this);
 
-        this.state = { book: {}, showNotification: false };
-
+        this.state = {
+            book: {},
+            showNotification: false,
+            validationErrors: new Map<string, string>()
+        };
     }
 
     public componentDidMount() {
@@ -52,8 +56,35 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
 
     }
 
+    protected isValidTextField(name: string, value: string, maxlength: number): boolean {
+
+        if (value == null || value.length < maxlength) {
+            this.state.validationErrors.set(name, '{name} cannot be empty and/or less the {maxLength} characters');
+            return false;
+        } else {
+            this.state.validationErrors.delete(name);
+            return true;
+        }
+    }
+
+    protected bookDataIsValid(book: Book): boolean {
+        let rs = true;
+        if (book == null) {
+            rs = false;
+        } else {
+            if (!this.isValidTextField('isbn', book.isbn, 5)) {
+                rs = false;
+            }
+            if (this.isValidTextField('name', book.name, 1)) {
+                rs = false;
+            }
+        }
+        return rs;
+    }
+
     protected handleISBNChange(newValue: string) {
         if (this.props.mode === Mode.NEW) {
+            this.isValidTextField('isbn',newValue, 5);
             this.setState({
                 book: {
                     isbn: newValue,
@@ -66,6 +97,7 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
     }
 
     protected handleNameChange(newValue: string) {
+        this.isValidTextField('name',newValue, 5);
         this.setState({
             book: {
                 isbn: this.state.book.isbn,
@@ -99,18 +131,22 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
     }
 
     protected handleSubmit(e) {
-        if (this.props.mode === Mode.NEW) {
-            this.props.bookExsists(this.state.book.isbn).then((rs: boolean) => {
-                if (rs === true) {
-                    this.setState({ showNotification: true });
-                } else {
-                    this.props.handleSubmit(this.state.book, this.props.mode);
-                    this.props.history.push('/home');
-                }
-            });
-        } else { //EDIT and DELETE
-            this.props.handleSubmit(this.state.book, this.props.mode);
-            this.props.history.push('/home');
+        if (this.bookDataIsValid(this.state.book)) {
+            if (this.props.mode === Mode.NEW) {
+                this.props.bookExsists(this.state.book.isbn).then((rs: boolean) => {
+                    if (rs === true) {
+                        this.setState({ showNotification: true });
+                    } else {
+                        this.props.handleSubmit(this.state.book, this.props.mode);
+                        this.props.history.push('/home');
+                    }
+                });
+            } else { //EDIT and DELETE
+                this.props.handleSubmit(this.state.book, this.props.mode);
+                this.props.history.push('/home');
+            }
+        } else {
+            console.log('There are validation errors.');
         }
 
     }
@@ -160,6 +196,7 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     borderless={true}
                     value={this.state.book.isbn}
                     onChanged={this.handleISBNChange}
+                    errorMessage={this.state.validationErrors.get('isbn')}
                 />
                 <DatePicker
                     label='Publication date'
@@ -176,11 +213,13 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     borderless={readOnlyMode}
                     value={this.state.book.name}
                     onChanged={this.handleNameChange}
+                    errorMessage={this.state.validationErrors.get('name')}
                 />
                 <TextField
                     label='Description'
                     placeholder='Description of the book'
                     multiline={true}
+                    required={true}
                     rows={4}
                     readOnly={readOnlyMode}
                     borderless={readOnlyMode}
