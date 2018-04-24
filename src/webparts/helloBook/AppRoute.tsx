@@ -29,16 +29,22 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         this.showAddBook = this.showAddBook.bind(this);
         this.showEditBook = this.showEditBook.bind(this);
         this.showDeleteBook = this.showDeleteBook.bind(this);
+        this.showBookCRUD = this.showBookCRUD.bind(this);
+
         this.handleBookChanges = this.handleBookChanges.bind(this);
 
         this.loadBooks = this.loadBooks.bind(this);
         this.updateSelectedBookId = this.updateSelectedBookId.bind(this);
         this.loadBookWrapperFunc = this.loadBookWrapperFunc.bind(this);
+        this.handleError = this.handleError.bind(this);
+        this.resetErrorState = this.resetErrorState.bind(this);
+        this.bookExistsWrapperFunc = this.bookExistsWrapperFunc.bind(this);
 
         this.state = {
             books: EMPTY_BOOKS,
             selectedBookId: NOT_SELECTED_BOOK_ID,
-            selectedBookIndex: NOT_SELECTED_BOOK_INDEX
+            selectedBookIndex: NOT_SELECTED_BOOK_INDEX,
+            errorOccured: false
         };
     }
 
@@ -52,7 +58,7 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         let rs = -1;
         if (bookId && bookId !== NOT_SELECTED_BOOK_ID) {
             for (let i = 0; i < books.length; i++) {
-                if (books[i]!=null && books[i].isbn === bookId) {
+                if (books[i] != null && books[i].isbn === bookId) {
                     rs = i;
                     break;
                 }
@@ -85,8 +91,20 @@ class AppRoute extends React.Component<any, IAppRouteState> {
     }
 
     protected showErrorPage() {
-        const props: IGenericScreenProps = { message: '', code: '' };
+        const props: IGenericScreenProps = {
+            customMessage: this.state.errorMessage,
+            error: this.state.error,
+            resetAndTryAgain: () => { this.resetErrorState(false, null, null); }
+        };
         return <GenericScreen {...props} />;
+    }
+
+    protected resetErrorState(flag: boolean, err: Error, customMsg?: string) {
+        this.setState({ errorOccured: flag });
+    }
+
+    protected handleError(err: Error, customMsg?: string) {
+        this.setState({ errorOccured: true, error: err, errorMessage: customMsg });
     }
 
     protected handleBookChanges(book: Book, mode: BookCRUDMode): void {
@@ -95,29 +113,26 @@ class AppRoute extends React.Component<any, IAppRouteState> {
             this.bookService.update(book).then((bookId: string) => {
                 this.loadBooks();
             }).catch((err) => {
-                throw new Error(err);
+                this.handleError(err, 'Book cannot be updated.');
+                //throw new Error(err);
             });
         } else if (mode === BookCRUDMode.DELETE) {
             this.bookService.delete(book.isbn).then((bookId: string) => {
                 this.loadBooks();
             }).catch((err) => {
-                throw new Error(err);
+                this.handleError(err, 'Book cannot be removed.');
+                //throw new Error(err);
             });
         } else if (mode === BookCRUDMode.NEW) {
-
+            this.bookService.create(book).then((bookId: string) => {
+                this.loadBooks();
+            }).catch((err) => {
+                this.handleError(err, 'Book cannot be created.');
+                //throw new Error(err);
+            });
         } else {
             throw new Error('Unknown Book CRUD mode');
         }
-
-    }
-
-    protected showAddBook() {
-        const props: IBookCRUDProps = {
-            mode: BookCRUDMode.NEW,
-            handleSubmit: this.handleBookChanges,
-            loadBook: this.loadBookWrapperFunc
-        };
-        return <BookCRUD {...props} />;
     }
 
     protected loadBookWrapperFunc(bookId: string): Promise<Book> {
@@ -129,38 +144,57 @@ class AppRoute extends React.Component<any, IAppRouteState> {
         });
     }
 
-    protected showEditBook() {
+    protected bookExistsWrapperFunc(bookId: string): Promise<boolean> {
+        return this.bookService.exists(bookId).then((rs: boolean) => {
+           return (rs);
+        }).catch((err) => {
+            console.log(err);
+            throw new Error(err);
+        });
+    }
+
+    protected showBookCRUD(theMode:BookCRUDMode){
         const props: IBookCRUDProps = {
-            mode: BookCRUDMode.EDIT,
+            mode:theMode,
             bookId: this.state.selectedBookId,
             handleSubmit: this.handleBookChanges,
-            loadBook: this.loadBookWrapperFunc
+            loadBook: this.loadBookWrapperFunc,
+            bookExsists: this.bookExistsWrapperFunc
         };
         return <BookCRUD {...props} />;
+    }
+
+    protected showAddBook() {
+        return  this.showBookCRUD(BookCRUDMode.NEW);       
+    }
+
+    protected showEditBook() {
+        return  this.showBookCRUD(BookCRUDMode.EDIT);  
     }
 
     protected showDeleteBook() {
-        const props: IBookCRUDProps = {
-            mode: BookCRUDMode.DELETE,
-            bookId: this.state.selectedBookId,
-            handleSubmit: this.handleBookChanges,
-            loadBook: this.loadBookWrapperFunc
-        };
-        return <BookCRUD {...props} />;
+        return  this.showBookCRUD(BookCRUDMode.DELETE);
+    }
+
+    protected renderRooutes() {
+        return (<HashRouter>
+            <Switch>
+                <Route exact path="/" component={this.showHelloBook} />
+                <Route path="/home" component={this.showHelloBook} />
+                <Route path="/add" component={this.showAddBook} />
+                <Route path="/edit" component={this.showEditBook} />
+                <Route path="/delete" component={this.showDeleteBook} />
+                <Route path="/error" component={this.showErrorPage} />
+            </Switch>
+        </HashRouter >);
     }
 
     public render() {
-        return (
-            <HashRouter>
-                <Switch>
-                    <Route exact path="/" component={this.showHelloBook} />
-                    <Route path="/home" component={this.showHelloBook} />
-                    <Route path="/add" component={this.showAddBook} />
-                    <Route path="/edit" component={this.showEditBook} />
-                    <Route path="/delete" component={this.showDeleteBook} />
-                    <Route path="/error" component={this.showErrorPage} />
-                </Switch>
-            </HashRouter >);
+        if (this.state.errorOccured) {
+            return this.showErrorPage();
+        } else {
+            return this.renderRooutes();
+        }
     }
 }
 

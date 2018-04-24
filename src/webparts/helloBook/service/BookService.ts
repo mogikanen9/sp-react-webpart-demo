@@ -6,4 +6,5 @@ export interface BookService {
     create(book: Book): Promise<string>;
     update (book: Book): Promise<string>;
     delete (bookId: string): Promise<string>;
+    exists(bookId: string): Promise<boolean>;
 }
