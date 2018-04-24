@@ -1,5 +1,5 @@
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
-import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
+import { DatePicker, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
 import { Dialog, DialogFooter, DialogType } from 'office-ui-fabric-react/lib/Dialog';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
@@ -7,9 +7,6 @@ import { Link, withRouter } from "react-router-dom";
 import { Book } from '../../service/vo/Book';
 import { IBookCRUDProps, Mode } from './IBookCRUDProps';
 import { IBookCRUDState } from './IBookCRUDState';
-
-
-
 
 const HEADER = new Map<Mode, string>();
 HEADER.set(Mode.DELETE, 'Delete book?');
@@ -21,6 +18,70 @@ SUBMIT_LABEL.set(Mode.DELETE, 'Delete');
 SUBMIT_LABEL.set(Mode.EDIT, 'Update');
 SUBMIT_LABEL.set(Mode.NEW, 'Add');
 
+const DAY_PICKER_STRINGS: IDatePickerStrings = {
+    months: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ],
+
+    shortMonths: [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+    ],
+
+    days: [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+    ],
+
+    shortDays: [
+        'S',
+        'M',
+        'T',
+        'W',
+        'T',
+        'F',
+        'S'
+    ],
+
+    goToToday: 'Go to today',
+    prevMonthAriaLabel: 'Go to previous month',
+    nextMonthAriaLabel: 'Go to next month',
+    prevYearAriaLabel: 'Go to previous year',
+    nextYearAriaLabel: 'Go to next year',
+
+    isRequiredErrorMessage: 'Field is required.',
+
+    invalidInputErrorMessage: 'Invalid date format.'
+};
+
+const MIN_LENGTH_ISBN = 5;
+const MIN_LENGTH_NAME = 1;
 
 class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
 
@@ -33,6 +94,8 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
         this.handleISBNChange = this.handleISBNChange.bind(this);
         this.closeDialog = this.closeDialog.bind(this);
         this.bookDataIsValid = this.bookDataIsValid.bind(this);
+        this.onValidateISBN = this.onValidateISBN.bind(this);
+        this.onValidateName = this.onValidateName.bind(this);
 
         this.state = {
             book: {},
@@ -56,10 +119,11 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
 
     }
 
-    protected isValidTextField(name: string, value: string, maxlength: number): boolean {
+    protected isValidTextField(name: string, value: string, maxLength: number): boolean {
 
-        if (value == null || value.length < maxlength) {
-            this.state.validationErrors.set(name, '{name} cannot be empty and/or less the {maxLength} characters');
+        if (value == null || value.length < maxLength) {
+            this.state.validationErrors.set(name, 
+                `${name} cannot be empty or less the ${maxLength} characters`);
             return false;
         } else {
             this.state.validationErrors.delete(name);
@@ -72,10 +136,10 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
         if (book == null) {
             rs = false;
         } else {
-            if (!this.isValidTextField('isbn', book.isbn, 5)) {
+            if (!this.isValidTextField('isbn', book.isbn, MIN_LENGTH_ISBN)) {
                 rs = false;
             }
-            if (this.isValidTextField('name', book.name, 1)) {
+            if (!this.isValidTextField('name', book.name, MIN_LENGTH_NAME)) {
                 rs = false;
             }
         }
@@ -84,7 +148,6 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
 
     protected handleISBNChange(newValue: string) {
         if (this.props.mode === Mode.NEW) {
-            this.isValidTextField('isbn',newValue, 5);
             this.setState({
                 book: {
                     isbn: newValue,
@@ -97,7 +160,6 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
     }
 
     protected handleNameChange(newValue: string) {
-        this.isValidTextField('name',newValue, 5);
         this.setState({
             book: {
                 isbn: this.state.book.isbn,
@@ -131,6 +193,7 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
     }
 
     protected handleSubmit(e) {
+
         if (this.bookDataIsValid(this.state.book)) {
             if (this.props.mode === Mode.NEW) {
                 this.props.bookExsists(this.state.book.isbn).then((rs: boolean) => {
@@ -181,6 +244,22 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
         );
     }
 
+    private onValidateISBN(value: string): string {
+        if (this.isValidTextField('isbn', value, MIN_LENGTH_ISBN)) {
+            return '';
+        } else {
+            return this.state.validationErrors.get('isbn');
+        }
+    }
+
+    private onValidateName(value: string): string {
+        if (this.isValidTextField('name', value, MIN_LENGTH_NAME)) {
+            return '';
+        } else {
+            return this.state.validationErrors.get('name');
+        }
+    }
+
     public render() {
         const readOnlyMode: boolean = this.props.mode === Mode.DELETE;
 
@@ -197,6 +276,11 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     value={this.state.book.isbn}
                     onChanged={this.handleISBNChange}
                     errorMessage={this.state.validationErrors.get('isbn')}
+                    onGetErrorMessage={this.onValidateISBN}
+                    validateOnFocusOut={true}
+                    validateOnFocusIn={true}
+                    validateOnLoad={false}
+                    minLength={MIN_LENGTH_ISBN}
                 />
                 <DatePicker
                     label='Publication date'
@@ -204,7 +288,8 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     disabled={readOnlyMode}
                     borderless={readOnlyMode}
                     value={this.state.book.pubDate}
-                    onSelectDate={this.handlePubDateChange} />
+                    onSelectDate={this.handlePubDateChange}
+                    strings={DAY_PICKER_STRINGS} />
                 <TextField
                     label='Name'
                     placeholder='Book name'
@@ -214,6 +299,11 @@ class BookCRUD extends React.Component<IBookCRUDProps, IBookCRUDState> {
                     value={this.state.book.name}
                     onChanged={this.handleNameChange}
                     errorMessage={this.state.validationErrors.get('name')}
+                    onGetErrorMessage={this.onValidateName}
+                    validateOnFocusOut={true}
+                    validateOnFocusIn={true}
+                    validateOnLoad={false}
+                    minLength={MIN_LENGTH_NAME}
                 />
                 <TextField
                     label='Description'
